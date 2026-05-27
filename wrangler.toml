@@ -1,0 +1,8 @@
+[[d1_databases]]
+binding = "DB"
+database_name = "propiedadesyparcelas-db"
+database_id = "ef18f976-c329-405c-a003-ae52789d6bfd"
+
+[[r2_buckets]]
+binding = "BUCKET_FOTOS"
+bucket_name = "propiedadesyparcelas-fotos"
