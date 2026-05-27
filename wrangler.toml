@@ -1,7 +1,7 @@
 [[d1_databases]]
-binding = "DB"
+binding = "propiedadesyparcelas_db"
 database_name = "propiedadesyparcelas-db"
-database_id = "ef18f976-c329-405c-a003-ae52789d6bfd"
+database_id = "ac88ce1c-c842-400b-b167-8c48c9608f9e"
 
 [[r2_buckets]]
 binding = "BUCKET_FOTOS"

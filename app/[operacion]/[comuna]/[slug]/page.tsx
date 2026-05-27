@@ -12,8 +12,10 @@ interface Props {
 // 1. GENERACIÓN DE METADATOS DINÁMICOS PARA GOOGLE (SEO SENIOR)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const db = (process.env as any).DB;
+  const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
   
+  if (!db) return {};
+
   // Buscamos los datos básicos de la propiedad para armar los títulos dinámicos
   const propiedad = await db.prepare(
     `SELECT titulo, descripcion, comuna, region FROM propiedades WHERE slug = ?`
@@ -38,7 +40,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // 2. COMPONENTE VISUAL DE LA PÁGINA (DISEÑO PREMIUM)
 export default async function PropiedadPage({ params }: Props) {
   const { slug } = await params;
-  const db = (process.env as any).DB;
+  const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+
+  if (!db) {
+    notFound();
+  }
 
   // Consultamos los datos completos de la propiedad y sus fotos adjuntas
   const propiedad = await db.prepare(

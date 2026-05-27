@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
     const urlPublica = `https://fotos.propiedadesyparcelas.cl/${fileName}`;
 
     // 2. Registramos la URL de la foto en la base de datos D1
-    const db = (process.env as any).DB;
+    const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+    if (!db) {
+      return NextResponse.json({ error: 'Base de datos D1 no vinculada' }, { status: 500 });
+    }
     await db.prepare(
       `INSERT INTO fotos (id, propiedad_id, url_r2, es_principal) VALUES (?, ?, ?, ?)`
     ).bind(crypto.randomUUID(), propiedadId, urlPublica, 0).run();

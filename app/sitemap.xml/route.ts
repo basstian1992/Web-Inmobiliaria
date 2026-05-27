@@ -9,9 +9,14 @@ export async function GET() {
   const baseUrl = 'https://propiedadesyparcelas.cl';
 
   try {
+    const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+    if (!db) {
+      throw new Error('Base de datos D1 no vinculada');
+    }
+
     // 1. Consultamos las propiedades directo a la base de datos Cloudflare D1
     // Ordenamos por prioridad para asegurar que las pagadas destaquen ante los rastreadores
-    const { results } = await process.env.DB.prepare(
+    const { results } = await db.prepare(
       `SELECT slug, comuna, tipo_operacion FROM propiedades ORDER BY prioridad_score DESC`
     ).all();
 
