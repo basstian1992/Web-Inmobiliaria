@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // output: 'export', // Desactivado para restaurar las capacidades de servidor dinámico (APIs, Clerk, D1, R2)
   // 1. Decirle a Next que ignore los errores de TypeScript en el build
   typescript: {
     ignoreBuildErrors: true,
