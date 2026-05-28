@@ -5,3 +5,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Forzando compilación limpia en la red de Cloudflare
