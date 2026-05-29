@@ -1,10 +1,15 @@
-name = "portal-inmobiliario"
+name = "propiedadesyparcelas"
 main = ".open-next/worker.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 [assets]
 directory = ".open-next/assets"
+
+# Activar logs para diagnosticar errores en producción
+[observability]
+enabled = true
+head_sampling_rate = 1
 
 [[d1_databases]]
 binding = "DB"
