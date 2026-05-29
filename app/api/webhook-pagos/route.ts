@@ -54,8 +54,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Falta ID de propiedad en los metadatos' }, { status: 400 });
       }
 
-      // 4. Actualizar la base de datos D1 del anuncio correspondiente
-      const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+      let db: any = null;
+      try {
+        const { getRequestContext } = await import("@opennextjs/cloudflare");
+        db = getRequestContext().env.DB;
+      } catch (e) {
+        db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+      }
       if (!db) {
         console.error('Error: No se encontró la base de datos D1 en process.env.propiedadesyparcelas_db o DB');
         return NextResponse.json({ error: 'Conexión a D1 no disponible' }, { status: 500 });

@@ -10,7 +10,13 @@ export async function GET() {
   const baseUrl = 'https://propiedadesyparcelas.cl';
 
   try {
-    const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+    let db: any = null;
+    try {
+      const { getRequestContext } = await import("@opennextjs/cloudflare");
+      db = getRequestContext().env.DB;
+    } catch (e) {
+      db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+    }
     if (!db) {
       throw new Error('Base de datos D1 no vinculada');
     }

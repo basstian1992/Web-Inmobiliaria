@@ -11,7 +11,13 @@ export default async function DashboardPage() {
     redirect('/sign-in');
   }
 
-  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+  let db: any = null;
+  try {
+    const { getRequestContext } = await import("@opennextjs/cloudflare");
+    db = getRequestContext().env.DB;
+  } catch (e) {
+    db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+  }
   if (!db) {
     // Si la base de datos D1 no está vinculada aún, pasamos un array vacío de respaldo
     return (

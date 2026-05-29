@@ -12,7 +12,13 @@ interface Props {
 // 1. GENERACIÓN DE METADATOS DINÁMICOS PARA GOOGLE (SEO SENIOR)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+  let db: any = null;
+  try {
+    const { getRequestContext } = await import("@opennextjs/cloudflare");
+    db = getRequestContext().env.DB;
+  } catch (e) {
+    db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+  }
   
   if (!db) return {};
 
@@ -40,7 +46,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // 2. COMPONENTE VISUAL DE LA PÁGINA (DISEÑO PREMIUM)
 export default async function PropiedadPage({ params }: Props) {
   const { slug } = await params;
-  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+  let db: any = null;
+  try {
+    const { getRequestContext } = await import("@opennextjs/cloudflare");
+    db = getRequestContext().env.DB;
+  } catch (e) {
+    db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+  }
 
   if (!db) {
     notFound();
