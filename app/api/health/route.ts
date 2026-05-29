@@ -45,6 +45,7 @@ export async function GET() {
     hasClerkSecret,
     hasDB,
     nodeVersion,
+    envKeys: typeof getRequestContext !== 'undefined' ? Object.keys((getRequestContext() as any)?.env || {}) : [],
     timestamp: new Date().toISOString(),
   });
 }
