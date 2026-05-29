@@ -2,6 +2,8 @@ import { getRequestContext } from '@opennextjs/cloudflare';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+export const runtime = "edge";
+
 interface Props {
   params: Promise<{
     operacion: string;

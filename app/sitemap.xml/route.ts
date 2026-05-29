@@ -1,7 +1,7 @@
 import { getRequestContext } from '@opennextjs/cloudflare';
 import { NextResponse } from 'next/server';
 
-// Forzamos a Next.js a que no guarde esta página en caché vieja, sino que la calcule al instante
+export const runtime = "edge";
 export const dynamic = 'force-dynamic';
 
 

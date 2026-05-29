@@ -1,6 +1,9 @@
 import { getRequestContext } from '@opennextjs/cloudflare';
 import Link from 'next/link';
 
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
 // Componente de la Página de Inicio
 export default async function HomePage() {
   let db: any = null;
