@@ -29,6 +29,13 @@ export async function GET() {
       if (process.env.CLERK_SECRET_KEY) {
         process.env.CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY.replace(/^\uFEFF/, '').trim();
       }
+
+      if ((globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && typeof (globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY === 'string') {
+        (globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = (globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.replace(/^\uFEFF/, '').trim();
+      }
+      if ((globalThis as any).CLERK_SECRET_KEY && typeof (globalThis as any).CLERK_SECRET_KEY === 'string') {
+        (globalThis as any).CLERK_SECRET_KEY = (globalThis as any).CLERK_SECRET_KEY.replace(/^\uFEFF/, '').trim();
+      }
     }
 
     hasClerkKey = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || !!(globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
