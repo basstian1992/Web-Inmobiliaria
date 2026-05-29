@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 interface Props {
   params: Promise<{
@@ -7,6 +8,21 @@ interface Props {
     comuna: string;
     slug: string;
   }>;
+}
+
+// Helper to parse external video embeds
+function getEmbedUrl(url: string) {
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null;
+  }
+  if (url.includes('vimeo.com')) {
+    const regExp = /vimeo\.com\/(\d+)/;
+    const match = url.match(regExp);
+    return match ? `https://player.vimeo.com/video/${match[1]}` : null;
+  }
+  return null;
 }
 
 // 1. GENERACIÓN DE METADATOS DINÁMICOS PARA GOOGLE (SEO SENIOR)
@@ -22,23 +38,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   if (!db) return {};
 
-  // Buscamos los datos básicos de la propiedad para armar los títulos dinámicos
   const propiedad = await db.prepare(
-    `SELECT titulo, descripcion, comuna, region FROM propiedades WHERE slug = ?`
+    `SELECT titulo, descripcion, comuna, region, tipo_propiedad, tipo_operacion FROM propiedades WHERE slug = ?`
   ).bind(slug).first();
 
   if (!propiedad) return {};
 
-  const tituloSEO = `${propiedad.titulo} en ${propiedad.comuna} | Propidades y Parcelas`;
+  const propTipoLabel = propiedad.tipo_propiedad === 'terreno' ? 'Terreno / Parcela' : propiedad.tipo_propiedad === 'casa' ? 'Casa' : 'Local Comercial';
+  const tituloSEO = `${propTipoLabel} en ${propiedad.tipo_operacion === 'venta' ? 'Venta' : propiedad.tipo_operacion === 'compra' ? 'Compra' : 'Arriendo'} | ${propiedad.titulo} en ${propiedad.comuna} | Propiedades & Parcelas Chile`;
+  const descSEO = `${propiedad.descripcion.substring(0, 155)}... Encuentra parcelas en venta, arriendos de locales y casas en Chile en propiedadesyparcelas.cl`;
 
   return {
     title: tituloSEO,
-    description: propiedad.descripcion.substring(0, 160), // Máximo de caracteres recomendado por Google
+    description: descSEO,
+    keywords: 'parcela, propiedades, corretaje, venta, compra, casa, compra de casa, compra de terreno, terreno en venta, venta de casa, venta de propiedad, local comercial, arriendo de local comercial, compra de local comercial, derecho a llave, compraventa, propiedades, terrenos en chile',
     openGraph: {
       title: tituloSEO,
-      description: propiedad.descripcion.substring(0, 160),
+      description: descSEO,
       type: 'website',
       locale: 'es_CL',
+      url: `https://www.propiedadesyparcelas.cl/${propiedad.tipo_operacion}/${propiedad.comuna}/${slug}`,
     },
   };
 }
@@ -58,7 +77,7 @@ export default async function PropiedadPage({ params }: Props) {
     notFound();
   }
 
-  // Consultamos los datos completos de la propiedad y sus fotos adjuntas
+  // Consultar propiedad
   const propiedad = await db.prepare(
     `SELECT * FROM propiedades WHERE slug = ?`
   ).bind(slug).first();
@@ -67,11 +86,28 @@ export default async function PropiedadPage({ params }: Props) {
     notFound();
   }
 
+  // Consultar fotos
   const { results: fotos } = await db.prepare(
     `SELECT url_r2 FROM fotos WHERE propiedad_id = ?`
   ).bind(propiedad.id).all();
 
-  // 3. INYECCIÓN DEL SCHEMA INMOBILIARIO (JSON-LD)
+  // Consultar videos
+  const { results: videos } = await db.prepare(
+    `SELECT * FROM videos WHERE propiedad_id = ?`
+  ).bind(propiedad.id).all();
+
+  // Parsear documentos
+  let documentosList: string[] = [];
+  try {
+    documentosList = JSON.parse(propiedad.documentos || '[]');
+  } catch (e) {
+    documentosList = [];
+  }
+
+  // Label del Tipo de Propiedad
+  const propLabel = propiedad.tipo_propiedad === 'terreno' ? 'Terreno / Parcela' : propiedad.tipo_propiedad === 'casa' ? 'Casa' : 'Local Comercial';
+
+  // 3. INYECCIÓN DEL SCHEMA INMOBILIARIO (JSON-LD ENRIQUECIDO)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'RealEstateListing',
@@ -87,69 +123,240 @@ export default async function PropiedadPage({ params }: Props) {
         'addressLocality': propiedad.comuna,
         'addressRegion': propiedad.region,
         'addressCountry': 'CL'
+      },
+      'numberOfRooms': propiedad.habitaciones,
+      'numberOfBathroomsTotal': propiedad.banos,
+      'floorSize': {
+        '@type': 'QuantitativeValue',
+        'value': propiedad.superficie_total,
+        'unitCode': 'MTK'
       }
     }
   };
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-8 font-sans">
-      {/* Inyección invisible para los robots de búsqueda de Google */}
+    <div className="bg-slate-900 min-h-screen text-slate-100 font-sans antialiased pb-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Título de Cabecera Estilo Premium */}
-      <div className="border-b border-gray-200 pb-6 mb-6">
-        <span className="text-sm font-semibold uppercase tracking-wide text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-          En {propiedad.tipo_operacion}
-        </span>
-        <h1 className="text-4xl font-extrabold text-gray-900 mt-3 tracking-tight">
-          {propiedad.titulo}
-        </h1>
-        <p className="text-gray-500 mt-2">📍 {propiedad.comuna}, {propiedad.region}, Chile</p>
+      {/* Header Alianza */}
+      <div className="bg-slate-950 border-b border-slate-800 text-center py-2.5 px-4 text-xs font-semibold text-indigo-300">
+        🤝 Esta propiedad está auspiciada bajo la alianza de corretaje con{' '}
+        <a href="https://www.asesoriapublica.cl" target="_blank" rel="noopener noreferrer" className="underline hover:text-white font-bold text-indigo-200">
+          Asesoría Pública (www.asesoriapublica.cl)
+        </a>
       </div>
 
-      {/* Galería de Fotos Cuadrícula Moderna */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {fotos.map((foto: any, index: number) => (
-          <div key={index} className="overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
-            <img 
-              src={foto.url_r2} 
-              alt={`Vista de la propiedad ${index + 1}`} 
-              className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500"
-            />
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Link href="/" className="text-xs font-bold text-indigo-400 hover:text-white transition-colors">
+          ← Volver al catálogo principal
+        </Link>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-10">
+        
+        {/* Cabecera de la Ficha */}
+        <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-950 bg-indigo-400 px-3 py-1 rounded-full">
+                {propiedad.tipo_operacion === 'venta' ? 'En Venta' : propiedad.tipo_operacion === 'compra' ? 'Se Compra' : 'En Arriendo'}
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-800 border border-slate-700 px-3 py-1 rounded-full">
+                {propLabel}
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{propiedad.titulo}</h1>
+            <p className="text-slate-400 text-sm flex items-center gap-1">📍 {propiedad.comuna}, {propiedad.region}, Chile</p>
           </div>
-        ))}
-      </div>
-
-      {/* Detalles Comerciales y Características técnicas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Descripción de la Propiedad</h2>
-            <p className="text-gray-600 leading-relaxed whitespace-pre-line">{propiedad.descripcion}</p>
+          <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center md:text-right w-full md:w-auto shrink-0 shadow-lg">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Valor comercial</span>
+            <p className="text-3xl font-black text-white mt-1">
+              {propiedad.precio_uf 
+                ? `${propiedad.precio_uf} UF` 
+                : propiedad.precio_pesos 
+                  ? `$${propiedad.precio_pesos.toLocaleString('es-CL')} CLP` 
+                  : 'Consultar Precio'}
+            </p>
           </div>
         </div>
 
-        {/* Tarjeta de precio y contacto lateral pegajosa (Sidebar Premium) */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-6 bg-gray-50 border border-gray-200 p-6 rounded-2xl shadow-sm">
-            <div className="mb-6">
-              <span className="text-xs text-gray-400 uppercase font-bold tracking-wider">Precio Solicitado</span>
-              <p className="text-3xl font-black text-gray-950 mt-1">
-                {propiedad.precio_uf ? `${propiedad.precio_uf} UF` : `$${propiedad.precio_pesos?.toLocaleString('es-CL')}`}
-              </p>
+        {/* Galería de Fotos - Grid Premium */}
+        {fotos && fotos.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {fotos.map((foto: any, index: number) => (
+              <div 
+                key={index} 
+                className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 hover:border-indigo-500/50 transition-all duration-300 shadow-lg relative h-72"
+              >
+                <img 
+                  src={foto.url_r2} 
+                  alt={`${propiedad.titulo} - Imagen ${index + 1}`} 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-slate-950 border border-slate-800 rounded-3xl p-12 text-center text-slate-500 text-sm font-medium">
+            No se han cargado imágenes para esta propiedad.
+          </div>
+        )}
+
+        {/* Detalles de la Propiedad */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Columna Principal */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Descripción */}
+            <div className="bg-slate-950 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+              <h2 className="text-lg font-bold text-white uppercase tracking-wider border-b border-slate-800 pb-2">Descripción General</h2>
+              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">{propiedad.descripcion}</p>
             </div>
+
+            {/* Checklist de Documentos Saneados */}
+            {documentosList.length > 0 && (
+              <div className="bg-slate-950 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+                <h2 className="text-lg font-bold text-indigo-400 uppercase tracking-wider border-b border-slate-800 pb-2">📂 Documentación Checklist Legal</h2>
+                <p className="text-slate-400 text-xs">Esta propiedad cuenta con los siguientes documentos físicos revisados y saneados:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  {documentosList.map((doc, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs font-semibold text-slate-200">
+                      <span className="text-emerald-500">✔</span>
+                      <span>{doc}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Videos Adjuntos */}
+            {videos && videos.length > 0 && (
+              <div className="bg-slate-950 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-6">
+                <h2 className="text-lg font-bold text-white uppercase tracking-wider border-b border-slate-800 pb-2">🎥 Videos de la Propiedad</h2>
+                {videos.map((vid: any, idx: number) => {
+                  const embedUrl = vid.url_externo ? getEmbedUrl(vid.url_externo) : null;
+                  
+                  return (
+                    <div key={idx} className="space-y-2">
+                      {embedUrl ? (
+                        <div className="aspect-video w-full rounded-2xl overflow-hidden border border-slate-850">
+                          <iframe
+                            src={embedUrl}
+                            className="w-full h-full"
+                            allowFullScreen
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          ></iframe>
+                        </div>
+                      ) : vid.url_externo ? (
+                        <a 
+                          href={vid.url_externo} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="block p-4 bg-slate-900 border border-slate-800 rounded-2xl text-xs font-bold text-indigo-400 hover:text-white text-center"
+                        >
+                          Ver Video Externo ↗ ({vid.url_externo})
+                        </a>
+                      ) : vid.url_r2 ? (
+                        <video 
+                          src={vid.url_r2} 
+                          controls 
+                          className="w-full rounded-2xl border border-slate-850"
+                        />
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Columna Sidebar (Contacto y Ficha Comercial) */}
+          <div className="lg:col-span-1 space-y-6">
             
-            <div className="space-y-3 pt-4 border-t border-gray-200 text-sm text-gray-600">
-              <div className="flex justify-between"><span>📐 Sup. Total:</span> <span className="font-bold">{propiedad.superficie_total} m²</span></div>
-              <div className="flex justify-between"><span>🛏️ Dormitorios:</span> <span className="font-bold">{propiedad.habitaciones}</span></div>
-              <div className="flex justify-between"><span>🚿 Baños:</span> <span className="font-bold">{propiedad.banos}</span></div>
+            {/* Ficha Técnica */}
+            <div className="bg-slate-950 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-4">
+              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2">Ficha Técnica</h3>
+              <div className="space-y-3 text-xs font-medium text-slate-300">
+                <div className="flex justify-between py-1 border-b border-slate-900">
+                  <span>📐 Sup. Total:</span>
+                  <span className="font-bold text-white">{propiedad.superficie_total} m²</span>
+                </div>
+                {propiedad.tipo_propiedad !== 'terreno' && (
+                  <>
+                    <div className="flex justify-between py-1 border-b border-slate-900">
+                      <span>🛏️ Dormitorios:</span>
+                      <span className="font-bold text-white">{propiedad.habitaciones}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-900">
+                      <span>🚿 Baños:</span>
+                      <span className="font-bold text-white">{propiedad.banos}</span>
+                    </div>
+                  </>
+                )}
+                {propiedad.observaciones && (
+                  <div className="pt-2">
+                    <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Notas de Visitas</span>
+                    <p className="text-slate-400 italic text-[11px] leading-relaxed">"{propiedad.observaciones}"</p>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Ficha del Vendedor */}
+            <div className="bg-gradient-to-br from-indigo-950 to-slate-950 border border-indigo-900/40 p-6 rounded-3xl shadow-xl space-y-6">
+              <div className="text-center space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full inline-block">
+                  Contacto Autorizado
+                </span>
+                <h4 className="text-lg font-black text-white">{propiedad.contacto_nombre || 'Corredor Premium'}</h4>
+                <p className="text-slate-400 text-xs">Ponte en contacto directo con el vendedor para agendar visitas o hacer ofertas comerciales.</p>
+              </div>
+
+              <div className="space-y-3">
+                {propiedad.contacto_telefono && (
+                  <a 
+                    href={`https://wa.me/${propiedad.contacto_telefono.replace(/[^0-9]/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs py-3 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+                  >
+                    <span>💬 WhatsApp Vendedor</span>
+                  </a>
+                )}
+                {propiedad.contacto_email && (
+                  <a 
+                    href={`mailto:${propiedad.contacto_email}?subject=Interés por: ${encodeURIComponent(propiedad.titulo)}`}
+                    className="w-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-extrabold text-xs py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2"
+                  >
+                    <span>✉ Enviar Correo</span>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Publicidad Cruzada de Asesoría Pública */}
+            <div className="bg-gradient-to-br from-slate-950 via-indigo-950/20 to-slate-950 border border-indigo-900/30 p-6 rounded-3xl shadow-xl space-y-4">
+              <h4 className="text-xs font-bold uppercase text-indigo-400 tracking-wider">¿Estudio de Títulos Saneado?</h4>
+              <p className="text-slate-400 text-xs leading-relaxed">
+                Antes de firmar promesas de compraventa, asegúrate con abogados expertos en saneamientos, herencias y subdivisión de terrenos rurales en Chile.
+              </p>
+              <a 
+                href="https://www.asesoriapublica.cl" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="block text-center bg-indigo-900/20 hover:bg-indigo-900/30 text-indigo-300 font-bold text-xs py-2.5 rounded-xl border border-indigo-900/40 transition-all"
+              >
+                Visitar Asesoría Pública ↗
+              </a>
+            </div>
+
           </div>
         </div>
-      </div>
-    </main>
+
+      </main>
+    </div>
   );
 }
