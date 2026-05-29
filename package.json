@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "pages:build": "next-on-pages",
+    "pages:build": "rm -rf .next .vercel && next-on-pages",
     "start": "next start",
     "lint": "eslint"
   },
