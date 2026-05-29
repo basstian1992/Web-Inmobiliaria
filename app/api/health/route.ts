@@ -20,6 +20,14 @@ export async function GET() {
       if (!process.env.CLERK_SECRET_KEY && (globalThis as any).CLERK_SECRET_KEY) {
         process.env.CLERK_SECRET_KEY = (globalThis as any).CLERK_SECRET_KEY;
       }
+
+      // Sanitizar claves de Clerk eliminando el BOM invisible (\uFEFF) y espacios adicionales
+      if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.replace(/^\uFEFF/, '').trim();
+      }
+      if (process.env.CLERK_SECRET_KEY) {
+        process.env.CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY.replace(/^\uFEFF/, '').trim();
+      }
     }
 
     hasClerkKey = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || !!(globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
