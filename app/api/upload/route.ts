@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // 1. Guardamos el archivo directamente en el Bucket R2 de Cloudflare
     // El "binding" BUCKET_FOTOS que configuramos en el wrangler.toml se accede desde el objeto env del contexto de Cloudflare
-    const bucket = (process.env as any).BUCKET_FOTOS;
+    const bucket = (globalThis as any).BUCKET_FOTOS || (process.env as any).BUCKET_FOTOS;
     await bucket.put(fileName, buffer, {
       httpMetadata: { contentType: 'image/webp' }
     });
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const urlPublica = `https://fotos.propiedadesyparcelas.cl/${fileName}`;
 
     // 2. Registramos la URL de la foto en la base de datos D1
-    const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+    const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
     if (!db) {
       return NextResponse.json({ error: 'Base de datos D1 no vinculada' }, { status: 500 });
     }

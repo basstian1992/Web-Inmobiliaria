@@ -11,9 +11,23 @@ export async function GET() {
 
   try {
     runtime = process.env.NEXT_RUNTIME || 'unknown';
-    hasClerkKey = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-    hasClerkSecret = !!process.env.CLERK_SECRET_KEY;
-    hasDB = !!(process.env as any).DB;
+    
+    // Inyectar dinámicamente para pruebas
+    if (typeof process !== 'undefined') {
+      if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && (globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = (globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+      }
+      if (!process.env.CLERK_SECRET_KEY && (globalThis as any).CLERK_SECRET_KEY) {
+        process.env.CLERK_SECRET_KEY = (globalThis as any).CLERK_SECRET_KEY;
+      }
+      if (!(process.env as any).DB && (globalThis as any).DB) {
+        (process.env as any).DB = (globalThis as any).DB;
+      }
+    }
+
+    hasClerkKey = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || !!(globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+    hasClerkSecret = !!process.env.CLERK_SECRET_KEY || !!(globalThis as any).CLERK_SECRET_KEY;
+    hasDB = !!(process.env as any).DB || !!(globalThis as any).DB;
     nodeVersion = typeof process !== 'undefined' ? process.version : 'n/a';
   } catch (e) {
     // Evitar que falle en runtime

@@ -12,7 +12,7 @@ interface Props {
 // 1. GENERACIÓN DE METADATOS DINÁMICOS PARA GOOGLE (SEO SENIOR)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
   
   if (!db) return {};
 
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // 2. COMPONENTE VISUAL DE LA PÁGINA (DISEÑO PREMIUM)
 export default async function PropiedadPage({ params }: Props) {
   const { slug } = await params;
-  const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
 
   if (!db) {
     notFound();

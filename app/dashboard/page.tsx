@@ -11,7 +11,7 @@ export default async function DashboardPage() {
     redirect('/sign-in');
   }
 
-  const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
   if (!db) {
     // Si la base de datos D1 no está vinculada aún, pasamos un array vacío de respaldo
     return (

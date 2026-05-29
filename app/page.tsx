@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 // Componente de la Página de Inicio
 export default async function HomePage() {
-  const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
 
   // Consultamos las 6 propiedades destacadas (prioridad_score > 0 primero)
   // Añadimos una verificación de seguridad para evitar caídas durante compilaciones locales

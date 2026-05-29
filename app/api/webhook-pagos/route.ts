@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       }
 
       // 4. Actualizar la base de datos D1 del anuncio correspondiente
-      const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+      const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
       if (!db) {
         console.error('Error: No se encontró la base de datos D1 en process.env.propiedadesyparcelas_db o DB');
         return NextResponse.json({ error: 'Conexión a D1 no disponible' }, { status: 500 });

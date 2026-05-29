@@ -1,9 +1,33 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
-export function middleware(request: NextRequest) {
-  return NextResponse.next();
+// 1. Copiar variables de entorno globales de Cloudflare al process.env de Node
+// ANTES de importar cualquier cosa de Clerk para evitar crashes por variables no inicializadas.
+if (typeof process !== 'undefined') {
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && (globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = (globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  }
+  if (!process.env.CLERK_SECRET_KEY && (globalThis as any).CLERK_SECRET_KEY) {
+    process.env.CLERK_SECRET_KEY = (globalThis as any).CLERK_SECRET_KEY;
+  }
 }
+
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+// Protegemos únicamente las rutas de administración como /dashboard
+const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
+
+export default clerkMiddleware(async (auth, req) => {
+  // Excluir ruta de diagnóstico de la autenticación para debuggear
+  if (req.nextUrl.pathname === '/api/health') {
+    return NextResponse.next();
+  }
+
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+}, {
+  publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
 
 export const config = {
   matcher: [

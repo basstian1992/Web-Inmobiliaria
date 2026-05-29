@@ -10,7 +10,7 @@ export async function GET() {
   const baseUrl = 'https://propiedadesyparcelas.cl';
 
   try {
-    const db = (process.env as any).propiedadesyparcelas_db || (process.env as any).DB;
+    const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
     if (!db) {
       throw new Error('Base de datos D1 no vinculada');
     }
