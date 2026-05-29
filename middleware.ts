@@ -25,8 +25,10 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
   }
 }, {
+  // Solo le pasamos publishableKey de forma explícita para evitar crashes de compilación
   publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-  secretKey: process.env.CLERK_SECRET_KEY,
+  // NO pasamos secretKey aquí para evitar que Clerk pida CLERK_ENCRYPTION_KEY.
+  // Clerk la leerá automáticamente de process.env.CLERK_SECRET_KEY en tiempo de petición.
 });
 
 export const config = {
