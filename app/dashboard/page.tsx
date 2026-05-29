@@ -1,9 +1,7 @@
-import { getRequestContext } from '@opennextjs/cloudflare';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import DashboardClient from './dashboard-client';
 
-export const runtime = "edge";
 export const dynamic = 'force-dynamic';
 
 
@@ -13,12 +11,7 @@ export default async function DashboardPage() {
     redirect('/sign-in');
   }
 
-  let db: any = null;
-  try {
-    db = getRequestContext().env.DB;
-  } catch (e) {
-    db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
-  }
+  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
   if (!db) {
     // Si la base de datos D1 no está vinculada aún, pasamos un array vacío de respaldo
     return (

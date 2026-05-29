@@ -1,7 +1,6 @@
-import { getRequestContext } from '@opennextjs/cloudflare';
 import { NextResponse } from 'next/server';
 
-export const runtime = "edge";
+// Forzamos a Next.js a que no guarde esta página en caché vieja, sino que la calcule al instante
 export const dynamic = 'force-dynamic';
 
 
@@ -11,12 +10,7 @@ export async function GET() {
   const baseUrl = 'https://propiedadesyparcelas.cl';
 
   try {
-    let db: any = null;
-    try {
-      db = getRequestContext().env.DB;
-    } catch (e) {
-      db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
-    }
+    const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
     if (!db) {
       throw new Error('Base de datos D1 no vinculada');
     }

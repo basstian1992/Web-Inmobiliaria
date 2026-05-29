@@ -1,10 +1,4 @@
-import { getRequestContext } from '@opennextjs/cloudflare';
 import { NextRequest, NextResponse } from 'next/server';
-
-
-
-
-export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,12 +20,7 @@ export async function POST(request: NextRequest) {
 
     // 1. Guardamos el archivo directamente en el Bucket R2 de Cloudflare
     // El "binding" BUCKET_FOTOS que configuramos en el wrangler.toml se accede desde el objeto env del contexto de Cloudflare
-    let bucket: any = null;
-    try {
-      bucket = getRequestContext().env.BUCKET_FOTOS;
-    } catch (e) {
-      bucket = (globalThis as any).BUCKET_FOTOS || (process.env as any).BUCKET_FOTOS;
-    }
+    const bucket = (globalThis as any).BUCKET_FOTOS || (process.env as any).BUCKET_FOTOS;
     await bucket.put(fileName, buffer, {
       httpMetadata: { contentType: 'image/webp' }
     });
@@ -40,12 +29,7 @@ export async function POST(request: NextRequest) {
     const urlPublica = `https://fotos.propiedadesyparcelas.cl/${fileName}`;
 
     // 2. Registramos la URL de la foto en la base de datos D1
-    let db: any = null;
-    try {
-      db = getRequestContext().env.DB;
-    } catch (e) {
-      db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
-    }
+    const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
     if (!db) {
       return NextResponse.json({ error: 'Base de datos D1 no vinculada' }, { status: 500 });
     }

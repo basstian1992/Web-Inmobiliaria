@@ -1,17 +1,8 @@
-import { getRequestContext } from '@opennextjs/cloudflare';
 import Link from 'next/link';
-
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
 
 // Componente de la Página de Inicio
 export default async function HomePage() {
-  let db: any = null;
-  try {
-    db = getRequestContext().env.DB;
-  } catch (e) {
-    db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
-  }
+  const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
 
   // Consultamos las 6 propiedades destacadas (prioridad_score > 0 primero)
   // Añadimos una verificación de seguridad para evitar caídas durante compilaciones locales
