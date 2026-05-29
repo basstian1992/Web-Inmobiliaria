@@ -13,8 +13,8 @@ export default async function DashboardPage() {
 
   let db: any = null;
   try {
-    const { getRequestContext } = await import("@opennextjs/cloudflare");
-    db = getRequestContext().env.DB;
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    db = getCloudflareContext().env.DB;
   } catch (e) {
     db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
   }

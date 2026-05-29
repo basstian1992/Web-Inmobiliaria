@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
     // El "binding" BUCKET_FOTOS que configuramos en el wrangler.toml se accede desde el objeto env del contexto de Cloudflare
     let bucket: any = null;
     try {
-      const { getRequestContext } = await import("@opennextjs/cloudflare");
-      bucket = getRequestContext().env.BUCKET_FOTOS;
+      const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+      bucket = getCloudflareContext().env.BUCKET_FOTOS;
     } catch (e) {
       bucket = (globalThis as any).BUCKET_FOTOS || (process.env as any).BUCKET_FOTOS;
     }
@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
     // 2. Registramos la URL de la foto en la base de datos D1
     let db: any = null;
     try {
-      const { getRequestContext } = await import("@opennextjs/cloudflare");
-      db = getRequestContext().env.DB;
+      const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+      db = getCloudflareContext().env.DB;
     } catch (e) {
       db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
     }

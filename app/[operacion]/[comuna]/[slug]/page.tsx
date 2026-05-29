@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   let db: any = null;
   try {
-    const { getRequestContext } = await import("@opennextjs/cloudflare");
-    db = getRequestContext().env.DB;
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    db = getCloudflareContext().env.DB;
   } catch (e) {
     db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
   }
@@ -48,8 +48,8 @@ export default async function PropiedadPage({ params }: Props) {
   const { slug } = await params;
   let db: any = null;
   try {
-    const { getRequestContext } = await import("@opennextjs/cloudflare");
-    db = getRequestContext().env.DB;
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    db = getCloudflareContext().env.DB;
   } catch (e) {
     db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
   }

@@ -42,8 +42,8 @@ export async function GET() {
     hasClerkSecret = !!process.env.CLERK_SECRET_KEY || !!(globalThis as any).CLERK_SECRET_KEY;
     
     try {
-      const { getRequestContext } = await import("@opennextjs/cloudflare");
-      const ctx = getRequestContext();
+      const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+      const ctx = getCloudflareContext();
       if (ctx && ctx.env) {
         envKeys = Object.keys(ctx.env);
         hasDB = !!ctx.env.DB;
