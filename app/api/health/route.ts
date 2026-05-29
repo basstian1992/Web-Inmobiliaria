@@ -24,7 +24,14 @@ export async function GET() {
 
     hasClerkKey = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || !!(globalThis as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
     hasClerkSecret = !!process.env.CLERK_SECRET_KEY || !!(globalThis as any).CLERK_SECRET_KEY;
-    hasDB = !!(process.env as any).DB || !!(globalThis as any).DB || !!(process.env as any).propiedadesyparcelas_db;
+    
+    try {
+      const { getRequestContext } = await import("@opennextjs/cloudflare");
+      const db = getRequestContext().env.DB;
+      hasDB = !!db;
+    } catch (e) {
+      hasDB = !!(process.env as any).DB || !!(globalThis as any).DB || !!(process.env as any).propiedadesyparcelas_db;
+    }
     nodeVersion = typeof process !== 'undefined' ? process.version : 'n/a';
   } catch (e) {
     // Evitar que falle en runtime
