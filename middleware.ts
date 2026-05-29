@@ -1,15 +1,19 @@
-// DIAGNÓSTICO TEMPORAL: middleware pass-through sin Clerk
-// para verificar si el Worker funciona correctamente sin autenticación
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export function middleware(request: NextRequest) {
-  return NextResponse.next();
-}
+// Protegemos únicamente las rutas de administración como /dashboard
+const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
+
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
+    // Omitir internos de Next.js y archivos estáticos (imágenes, css, js, etc.)
     '/((?!_next|[^?]*\\.[^?]*$).*)',
+    // Asegurar que se ejecute siempre para las rutas de API
     '/(api|trpc)(.*)',
   ],
 };
