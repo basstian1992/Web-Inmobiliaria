@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 
-export const runtime = 'edge'; // Ejecución ultra rápida en Cloudflare Edge
+
+
 
 export async function POST(request: NextRequest) {
   try {

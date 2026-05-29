@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge'; // Forzamos la ejecución en la red global rápida de Cloudflare
+
+
 
 export async function POST(request: NextRequest) {
   try {

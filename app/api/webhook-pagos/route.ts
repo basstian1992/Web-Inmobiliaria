@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge'; // Ejecución en Cloudflare Edge
+
+
 
 export async function POST(request: NextRequest) {
   try {
