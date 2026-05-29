@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 // Forzamos a Next.js a que no guarde esta página en caché vieja, sino que la calcule al instante
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 export async function GET() {
   // En el entorno de Cloudflare, la base de datos se inyecta globalmente
