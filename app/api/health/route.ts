@@ -8,6 +8,7 @@ export async function GET() {
   let hasDB = false;
   let nodeVersion = 'unknown';
   let runtime = 'unknown';
+  let envKeys: string[] = [];
 
   try {
     runtime = process.env.NEXT_RUNTIME || 'unknown';
@@ -35,8 +36,11 @@ export async function GET() {
     
     try {
       const { getRequestContext } = await import("@opennextjs/cloudflare");
-      const db = getRequestContext().env.DB;
-      hasDB = !!db;
+      const ctx = getRequestContext();
+      if (ctx && ctx.env) {
+        envKeys = Object.keys(ctx.env);
+        hasDB = !!ctx.env.DB;
+      }
     } catch (e) {
       hasDB = !!(process.env as any).DB || !!(globalThis as any).DB || !!(process.env as any).propiedadesyparcelas_db;
     }
@@ -51,6 +55,7 @@ export async function GET() {
     hasClerkKey,
     hasClerkSecret,
     hasDB,
+    envKeys,
     nodeVersion,
     timestamp: new Date().toISOString(),
   });
