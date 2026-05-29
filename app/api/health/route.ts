@@ -41,7 +41,8 @@ export async function GET() {
         envKeys = Object.keys(ctx.env);
         hasDB = !!ctx.env.DB;
       }
-    } catch (e) {
+    } catch (e: any) {
+      console.error("Error al obtener contexto de Cloudflare:", e?.message || e);
       hasDB = !!(process.env as any).DB || !!(globalThis as any).DB || !!(process.env as any).propiedadesyparcelas_db;
     }
     nodeVersion = typeof process !== 'undefined' ? process.version : 'n/a';
