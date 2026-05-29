@@ -1,3 +1,4 @@
+import { getRequestContext } from '@opennextjs/cloudflare';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -58,7 +59,12 @@ export async function POST(request: NextRequest) {
       }
 
       // 4. Actualizar la base de datos D1 del anuncio correspondiente
-      const db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+      let db: any = null;
+      try {
+        db = getRequestContext().env.DB;
+      } catch (e) {
+        db = (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+      }
       if (!db) {
         console.error('Error: No se encontró la base de datos D1 en process.env.propiedadesyparcelas_db o DB');
         return NextResponse.json({ error: 'Conexión a D1 no disponible' }, { status: 500 });
