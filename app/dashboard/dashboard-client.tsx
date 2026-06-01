@@ -33,13 +33,22 @@ interface DashboardClientProps {
 
 // Predefinidos chilenos
 const REGIONES_Y_COMUNAS = [
-  { region: 'Región Metropolitana', comunas: ['Santiago', 'Melipilla', 'Pomaire', 'Colina', 'Lampa', 'Pirque', 'Buin', 'Paine', 'Talagante'] },
-  { region: 'Valparaíso', comunas: ['Valparaíso', 'Viña del Mar', 'Quilpué', 'Villa Alemana', 'San Antonio', 'Algarrobo', 'Casablanca'] },
-  { region: 'Libertador General Bernardo O\'Higgins', comunas: ['Rancagua', 'San Fernando', 'Pichilemu', 'Machalí', 'Chimbarongo'] },
+  { region: 'Arica y Parinacota', comunas: ['Arica', 'Putre'] },
+  { region: 'Tarapacá', comunas: ['Iquique', 'Alto Hospicio', 'Pozo Almonte'] },
+  { region: 'Antofagasta', comunas: ['Antofagasta', 'Calama', 'Tocopilla', 'Mejillones'] },
+  { region: 'Atacama', comunas: ['Copiapó', 'Vallenar', 'Caldera', 'Chañaral'] },
+  { region: 'Coquimbo', comunas: ['La Serena', 'Coquimbo', 'Ovalle', 'Illapel', 'Vicuña'] },
+  { region: 'Valparaíso', comunas: ['Valparaíso', 'Viña del Mar', 'Quilpué', 'Villa Alemana', 'San Antonio', 'Algarrobo', 'Casablanca', 'Concón'] },
+  { region: 'Metropolitana de Santiago', comunas: ['Santiago', 'Melipilla', 'Pomaire', 'Colina', 'Lampa', 'Pirque', 'Buin', 'Paine', 'Talagante', 'Providencia', 'Las Condes'] },
+  { region: 'Libertador Gral. Bernardo O\'Higgins', comunas: ['Rancagua', 'San Fernando', 'Pichilemu', 'Machalí', 'Chimbarongo'] },
   { region: 'Maule', comunas: ['Talca', 'Curicó', 'Linares', 'Constitución', 'Cauquenes'] },
-  { region: 'Biobío', comunas: ['Concepción', 'Talcahuano', 'Chiguayante', 'San Pedro de la Paz', 'Coronel'] },
+  { region: 'Ñuble', comunas: ['Chillán', 'Bulnes', 'San Carlos', 'Cobquecura'] },
+  { region: 'Biobío', comunas: ['Concepción', 'Talcahuano', 'Chiguayante', 'San Pedro de la Paz', 'Coronel', 'Los Ángeles'] },
   { region: 'La Araucanía', comunas: ['Temuco', 'Pucón', 'Villarrica', 'Padre Las Casas', 'Angol'] },
-  { region: 'Los Lagos', comunas: ['Puerto Montt', 'Puerto Varas', 'Osorno', 'Castro', 'Ancud'] }
+  { region: 'Los Ríos', comunas: ['Valdivia', 'Panguipulli', 'La Unión', 'Río Bueno'] },
+  { region: 'Los Lagos', comunas: ['Puerto Montt', 'Puerto Varas', 'Osorno', 'Castro', 'Ancud', 'Frutillar'] },
+  { region: 'Aysén', comunas: ['Coyhaique', 'Puerto Aysén', 'Cochrane'] },
+  { region: 'Magallanes', comunas: ['Punta Arenas', 'Puerto Natales', 'Porvenir'] }
 ];
 
 const PLANES_INFO = {

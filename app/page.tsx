@@ -55,36 +55,36 @@ export default async function HomePage() {
           </p>
 
           {/* Barra de Búsqueda UX Premium */}
-          <div className="dark:bg-slate-950/80 bg-white/80 backdrop-blur-md p-3 rounded-2xl border dark:border-slate-850 border-slate-200 shadow-2xl max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 dark:text-slate-200 text-slate-800 transition-colors">
-            <select className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
+          <form action="/buscar" method="GET" className="dark:bg-slate-950/80 bg-white/80 backdrop-blur-md p-3 rounded-2xl border dark:border-slate-850 border-slate-200 shadow-2xl max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 dark:text-slate-200 text-slate-800 transition-colors">
+            <select name="tipo" className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
               <option value="">¿Qué buscas? (Todo)</option>
               <option value="terreno">Terrenos / Parcelas</option>
               <option value="casa">Casas</option>
               <option value="local">Locales Comerciales</option>
             </select>
-            <select className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
+            <select name="region" className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
               <option value="">Ubicación (Todas)</option>
-              <option value="XV">Región de Arica y Parinacota</option>
-              <option value="I">Región de Tarapacá</option>
-              <option value="II">Región de Antofagasta</option>
-              <option value="III">Región de Atacama</option>
-              <option value="IV">Región de Coquimbo</option>
-              <option value="V">Región de Valparaíso</option>
-              <option value="RM">Región Metropolitana de Santiago</option>
-              <option value="VI">Región del Libertador Gral. B. O'Higgins</option>
-              <option value="VII">Región del Maule</option>
-              <option value="XVI">Región de Ñuble</option>
-              <option value="VIII">Región del Biobío</option>
-              <option value="IX">Región de La Araucanía</option>
-              <option value="XIV">Región de Los Ríos</option>
-              <option value="X">Región de Los Lagos</option>
-              <option value="XI">Región de Aysén del Gral. Carlos Ibáñez del Campo</option>
-              <option value="XII">Región de Magallanes y de la Antártica Chilena</option>
+              <option value="Arica y Parinacota">Región de Arica y Parinacota</option>
+              <option value="Tarapacá">Región de Tarapacá</option>
+              <option value="Antofagasta">Región de Antofagasta</option>
+              <option value="Atacama">Región de Atacama</option>
+              <option value="Coquimbo">Región de Coquimbo</option>
+              <option value="Valparaíso">Región de Valparaíso</option>
+              <option value="Metropolitana de Santiago">Región Metropolitana de Santiago</option>
+              <option value="Libertador Gral. Bernardo O'Higgins">Región del Libertador Gral. B. O'Higgins</option>
+              <option value="Maule">Región del Maule</option>
+              <option value="Ñuble">Región de Ñuble</option>
+              <option value="Biobío">Región del Biobío</option>
+              <option value="La Araucanía">Región de La Araucanía</option>
+              <option value="Los Ríos">Región de Los Ríos</option>
+              <option value="Los Lagos">Región de Los Lagos</option>
+              <option value="Aysén">Región de Aysén del Gral. Carlos Ibáñez del Campo</option>
+              <option value="Magallanes">Región de Magallanes y de la Antártica Chilena</option>
             </select>
-            <button className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-md hover:shadow-indigo-500/20 text-xs tracking-wider uppercase cursor-pointer">
+            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-md hover:shadow-indigo-500/20 text-xs tracking-wider uppercase cursor-pointer">
               Buscar Propiedades
             </button>
-          </div>
+          </form>
         </div>
       </section>
 
@@ -95,10 +95,10 @@ export default async function HomePage() {
         <div className="lg:col-span-3 space-y-10">
           <div className="flex justify-between items-end border-b border-slate-800 pb-5">
             <div>
-              <h2 className="text-2xl font-black text-white">Catálogo de Propiedades Destacadas</h2>
-              <p className="text-slate-400 text-xs mt-1">Anuncios certificados legalmente y optimizados para buscadores.</p>
+              <h2 className="text-2xl font-black dark:text-white text-slate-900">Catálogo de Propiedades Destacadas</h2>
+              <p className="dark:text-slate-400 text-slate-600 text-xs mt-1">Anuncios certificados legalmente y optimizados para buscadores.</p>
             </div>
-            <Link href="/venta" className="text-xs font-bold text-indigo-400 hover:text-white transition-colors shrink-0">
+            <Link href="/buscar" className="text-xs font-bold dark:text-indigo-400 text-indigo-600 dark:hover:text-white hover:text-indigo-800 transition-colors shrink-0">
               Ver catálogo completo →
             </Link>
           </div>
