@@ -19,6 +19,17 @@ export const metadata: Metadata = {
   title: "Propiedades, Locales Comerciales, Compra-Venta en Chile",
   description: "Encuentra casas, parcelas, locales comerciales y propiedades en todo Chile con el mejor portal inmobiliario.",
   keywords: "parcela, propiedades, corretaje, venta, compra, casa, compra de casa, compra de terreno, terreno en venta, venta de casa, venta de propiedad, local comercial, arriendo de local comercial, compra de local comercial, derecho a llave, compraventa, propiedades, terrenos en chile",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({

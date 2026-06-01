@@ -55,18 +55,31 @@ export default async function HomePage() {
           </p>
 
           {/* Barra de Búsqueda UX Premium */}
-          <div className="dark:bg-slate-950/80 bg-white/80 backdrop-blur-md p-3 rounded-2xl border dark:border-slate-850 border-slate-200 shadow-2xl max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 dark:text-slate-200 text-slate-800">
-            <select className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-200 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700">
+          <div className="dark:bg-slate-950/80 bg-white/80 backdrop-blur-md p-3 rounded-2xl border dark:border-slate-850 border-slate-200 shadow-2xl max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 dark:text-slate-200 text-slate-800 transition-colors">
+            <select className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
               <option value="">¿Qué buscas? (Todo)</option>
               <option value="terreno">Terrenos / Parcelas</option>
               <option value="casa">Casas</option>
               <option value="local">Locales Comerciales</option>
             </select>
-            <select className="w-full bg-slate-900 border border-slate-800 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-300">
+            <select className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
               <option value="">Ubicación (Todas)</option>
-              <option value="melipilla">Melipilla</option>
-              <option value="pomaire">Pomaire</option>
-              <option value="santiago">Santiago</option>
+              <option value="XV">Región de Arica y Parinacota</option>
+              <option value="I">Región de Tarapacá</option>
+              <option value="II">Región de Antofagasta</option>
+              <option value="III">Región de Atacama</option>
+              <option value="IV">Región de Coquimbo</option>
+              <option value="V">Región de Valparaíso</option>
+              <option value="RM">Región Metropolitana de Santiago</option>
+              <option value="VI">Región del Libertador Gral. B. O'Higgins</option>
+              <option value="VII">Región del Maule</option>
+              <option value="XVI">Región de Ñuble</option>
+              <option value="VIII">Región del Biobío</option>
+              <option value="IX">Región de La Araucanía</option>
+              <option value="XIV">Región de Los Ríos</option>
+              <option value="X">Región de Los Lagos</option>
+              <option value="XI">Región de Aysén del Gral. Carlos Ibáñez del Campo</option>
+              <option value="XII">Región de Magallanes y de la Antártica Chilena</option>
             </select>
             <button className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-md hover:shadow-indigo-500/20 text-xs tracking-wider uppercase cursor-pointer">
               Buscar Propiedades
