@@ -389,9 +389,9 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
         {/* Alianza con Asesoría Pública Cintillo Header */}
         <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border-y border-indigo-900/40 py-2.5 text-center mb-8">
           <p className="text-xs text-indigo-300 font-medium">
-            🤝 Propiedades & Parcelas es una extensión oficial de servicios de{' '}
+            🤝 Plataforma de extensión de servicios de{' '}
             <a href="https://www.asesoriapublica.cl" target="_blank" rel="noopener noreferrer" className="underline hover:text-white font-bold text-indigo-200">
-              Asesoría Pública (www.asesoriapublica.cl)
+              www.asesoriapublica.cl
             </a>
           </p>
         </div>
