@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
       subject = 'Suscripción Portal Inmobiliario - Plan 50K (Exposición Máxima)';
     }
 
-    // Obtener variables de entorno de Cloudflare
+    // Obtener variables de entorno de Cloudflare y BD
+    let db: any = null;
     let flowApiKey = '';
     let flowSecretKey = '';
     let flowSandbox = 'true';
@@ -51,13 +52,25 @@ export async function POST(request: NextRequest) {
     try {
       const { getCloudflareContext } = await import('@opennextjs/cloudflare');
       const env = getCloudflareContext().env;
+      db = env.DB;
       flowApiKey = env.FLOW_API_KEY || '';
       flowSecretKey = env.FLOW_SECRET_KEY || '';
       flowSandbox = env.FLOW_SANDBOX || 'true';
     } catch (e) {
+      db = (globalThis as any).DB || process.env.DB || (process.env as any).propiedadesyparcelas_db;
       flowApiKey = process.env.FLOW_API_KEY || '';
       flowSecretKey = process.env.FLOW_SECRET_KEY || '';
       flowSandbox = process.env.FLOW_SANDBOX || 'true';
+    }
+
+    // Buscar en la configuración del administrador si el link estático fue configurado
+    if (db) {
+       const key = `flow_${plan}`;
+       const config = await db.prepare('SELECT valor FROM configuraciones WHERE clave = ?').bind(key).first();
+       if (config && config.valor && config.valor.trim() !== '') {
+          // Si el administrador configuró un link de Flow directo, retornamos ese.
+          return NextResponse.json({ success: true, redirectUrl: config.valor.trim() });
+       }
     }
 
     if (!flowApiKey || !flowSecretKey) {

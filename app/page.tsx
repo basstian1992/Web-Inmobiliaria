@@ -31,10 +31,10 @@ export default async function HomePage() {
   return (
     <div className="bg-slate-900 min-h-screen font-sans antialiased text-slate-100 pb-20">
       
-      {/* Cintillo de la Alianza en Cabecera */}
-      <div className="bg-slate-950 border-b border-indigo-900/40 text-center py-3 px-4 text-xs font-semibold text-indigo-300">
-        🚀 Propiedades & Parcelas es una extensión de servicios de{' '}
-        <a href="https://www.asesoriapublica.cl" target="_blank" rel="noopener noreferrer" className="underline hover:text-white font-bold text-indigo-200">
+      {/* Cintillo de la Alianza en Cabecera (Más destacado) */}
+      <div className="bg-indigo-950 border-b border-indigo-500/40 text-center py-4 px-4 text-sm font-bold text-indigo-100 shadow-md">
+        🌟 Esta plataforma es una extensión oficial de servicios de{' '}
+        <a href="https://www.asesoriapublica.cl" target="_blank" rel="noopener noreferrer" className="underline hover:text-white text-indigo-300 font-black tracking-wide">
           Asesoría Pública (www.asesoriapublica.cl)
         </a>{' '}
         — Legalidad y Corretaje Seguro en todo Chile.
@@ -47,8 +47,8 @@ export default async function HomePage() {
           <span className="text-indigo-400 uppercase tracking-widest text-[10px] font-bold bg-indigo-500/10 px-4.5 py-2 rounded-full border border-indigo-500/20">
             Terrenos, Casas y Locales Comerciales en Chile
           </span>
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-blue-200">
-            Propiedades & Parcelas Premium
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-blue-300 leading-tight">
+            Propiedades, Locales Comerciales, Compra-Venta en Chile
           </h1>
           <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
             Plataforma exclusiva dirigida a quienes buscan comprar, vender o arrendar terrenos rurales, parcelas de agrado, casas de alto estándar y locales comerciales con saneamiento legal garantizado.
@@ -222,6 +222,99 @@ export default async function HomePage() {
 
         </div>
 
+      </section>
+
+      {/* 3. SECCIÓN TARIFAS Y PLANES */}
+      <section className="bg-slate-950 py-24 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Planes y Tarifas para Vendedores</h2>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Publica tus propiedades y llega a miles de compradores. Nuestro sistema optimiza tu aviso y lo impulsa en motores de búsqueda como Google (SEO) según tu nivel de plan, dándote visibilidad tanto dentro como fuera del sitio.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            {/* Plan Gratis */}
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col shadow-lg">
+              <h3 className="text-xl font-black text-white">Básico</h3>
+              <div className="mt-4 mb-6">
+                <span className="text-3xl font-black text-white">Gratis</span>
+              </div>
+              <ul className="space-y-3 text-xs text-slate-400 mb-8 flex-1">
+                <li className="flex gap-2">✅ Hasta <strong>2 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>5 Fotos</strong> por aviso</li>
+                <li className="flex gap-2 opacity-50">❌ Sin videos</li>
+                <li className="flex gap-2">✅ Posicionamiento Estándar</li>
+              </ul>
+              <Link href="/dashboard" className="text-center w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all text-xs">
+                Comenzar Gratis
+              </Link>
+            </div>
+
+            {/* Plan 10K */}
+            <div className="bg-gradient-to-b from-indigo-950 to-slate-900 border border-indigo-900/40 rounded-3xl p-8 flex flex-col shadow-xl">
+              <h3 className="text-xl font-black text-indigo-400">Plan 10K</h3>
+              <div className="mt-4 mb-6">
+                <span className="text-3xl font-black text-white">$10.000</span>
+                <span className="text-slate-500 text-xs ml-1">CLP/mes</span>
+              </div>
+              <ul className="space-y-3 text-xs text-slate-300 mb-8 flex-1">
+                <li className="flex gap-2">✅ Hasta <strong>4 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>8 Fotos</strong> por aviso</li>
+                <li className="flex gap-2">✅ <strong>1 Video</strong> (Enlace)</li>
+                <li className="flex gap-2 text-indigo-300">🚀 Impulso SEO Medio</li>
+                <li className="flex gap-2 text-indigo-300">🚀 Prioridad en Buscador Interno</li>
+              </ul>
+              <Link href="/dashboard" className="text-center w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all text-xs shadow-md">
+                Suscribirse
+              </Link>
+            </div>
+
+            {/* Plan 20K */}
+            <div className="bg-gradient-to-b from-blue-950 to-slate-900 border-2 border-blue-500/40 relative rounded-3xl p-8 flex flex-col shadow-2xl transform scale-105 z-10">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                Recomendado
+              </span>
+              <h3 className="text-xl font-black text-blue-400">Plan 20K</h3>
+              <div className="mt-4 mb-6">
+                <span className="text-3xl font-black text-white">$20.000</span>
+                <span className="text-slate-500 text-xs ml-1">CLP/mes</span>
+              </div>
+              <ul className="space-y-3 text-xs text-slate-300 mb-8 flex-1">
+                <li className="flex gap-2">✅ Hasta <strong>10 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>20 Fotos</strong> por aviso</li>
+                <li className="flex gap-2">✅ Hasta <strong>3 Videos</strong></li>
+                <li className="flex gap-2 text-blue-300">🔥 Impulso SEO Alto VIP</li>
+                <li className="flex gap-2 text-blue-300">🔥 Rich Snippets en Google</li>
+              </ul>
+              <Link href="/dashboard" className="text-center w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all text-xs shadow-lg">
+                Suscribirse VIP
+              </Link>
+            </div>
+
+            {/* Plan 50K */}
+            <div className="bg-gradient-to-b from-amber-950 to-slate-900 border border-amber-900/40 rounded-3xl p-8 flex flex-col shadow-xl">
+              <h3 className="text-xl font-black text-amber-400">Agencia 50K</h3>
+              <div className="mt-4 mb-6">
+                <span className="text-3xl font-black text-white">$50.000</span>
+                <span className="text-slate-500 text-xs ml-1">CLP/mes</span>
+              </div>
+              <ul className="space-y-3 text-xs text-slate-300 mb-8 flex-1">
+                <li className="flex gap-2">✅ Hasta <strong>50 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>30 Fotos</strong> por aviso</li>
+                <li className="flex gap-2">✅ Hasta <strong>10 Videos</strong></li>
+                <li className="flex gap-2 text-amber-300">👑 Exposición Máxima Absoluta</li>
+                <li className="flex gap-2 text-amber-300">👑 Campaña SEO Ultra Integrada</li>
+              </ul>
+              <Link href="/dashboard" className="text-center w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-all text-xs shadow-md">
+                Contratar Agencia
+              </Link>
+            </div>
+
+          </div>
+        </div>
       </section>
 
       {/* Footer */}

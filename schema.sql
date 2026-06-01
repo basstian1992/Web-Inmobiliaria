@@ -51,3 +51,10 @@ CREATE TABLE IF NOT EXISTS videos (
     es_principal INTEGER DEFAULT 0,
     FOREIGN KEY (propiedad_id) REFERENCES propiedades(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS configuraciones (
+    clave TEXT PRIMARY KEY,
+    valor TEXT NOT NULL,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
