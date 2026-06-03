@@ -1,0 +1,26 @@
+{
+  "node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\ClerkProvider.js -> ./keyless-creator-reader.js": {
+    "id": 2642,
+    "files": [
+      "static/chunks/642.31d6e6fc21dcd0e8.js"
+    ]
+  },
+  "node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\keyless-cookie-sync.js -> ../keyless-actions.js": {
+    "id": 3017,
+    "files": [
+      "static/chunks/17.7bbdf6f4ac3f817e.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": 472,
+    "files": [
+      "static/chunks/472.a3826d29d6854395.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": 9341,
+    "files": [
+      "static/chunks/341.716d46e6e5cb6bdc.js"
+    ]
+  }
+}

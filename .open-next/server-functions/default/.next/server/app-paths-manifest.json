@@ -1,0 +1,22 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/pagos/preference/route": "app/api/pagos/preference/route.js",
+  "/api/pagos/flow-create/route": "app/api/pagos/flow-create/route.js",
+  "/api/propiedades/crear/route": "app/api/propiedades/crear/route.js",
+  "/api/upload/route": "app/api/upload/route.js",
+  "/api/videos/crear/route": "app/api/videos/crear/route.js",
+  "/api/webhook-pagos/route": "app/api/webhook-pagos/route.js",
+  "/api/webhook-flow/route": "app/api/webhook-flow/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/admin/configuraciones/route": "app/api/admin/configuraciones/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
+  "/admin/page": "app/admin/page.js",
+  "/[operacion]/[comuna]/[slug]/page": "app/[operacion]/[comuna]/[slug]/page.js",
+  "/sign-in/[[...sign-in]]/page": "app/sign-in/[[...sign-in]]/page.js",
+  "/sign-up/[[...sign-up]]/page": "app/sign-up/[[...sign-up]]/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/buscar/page": "app/buscar/page.js",
+  "/consejos/page": "app/consejos/page.js",
+  "/page": "app/page.js"
+}

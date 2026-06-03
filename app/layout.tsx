@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import SiteHeader from "@/components/SiteHeader";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -32,11 +33,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { userId } = await auth();
+
   return (
     <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <html
@@ -46,7 +49,7 @@ export default function RootLayout({
       >
         <body className="min-h-full flex flex-col bg-background text-foreground">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <SiteHeader />
+            <SiteHeader userId={userId} />
             {children}
           </ThemeProvider>
         </body>
