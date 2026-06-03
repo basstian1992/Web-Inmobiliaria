@@ -48,7 +48,7 @@ export default async function HomePage() {
           {/* Logo Principal Gigante Flotante */}
           <div className="flex justify-center mb-6 sm:mb-10">
             <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-[2.5rem] sm:rounded-[3.5rem] overflow-hidden bg-white/60 dark:bg-slate-900/50 backdrop-blur-md shadow-2xl shadow-indigo-500/10 dark:shadow-indigo-500/5 border border-white/40 dark:border-slate-700 flex items-center justify-center p-4 sm:p-6 transform transition-all hover:scale-105 hover:shadow-indigo-500/20 duration-500">
-              <img src="/logo.png?v=2" alt="Portal Inmobiliario Logo" className="w-full h-full object-contain" />
+              <img src="/nuevo-logo.jpg" alt="Portal Inmobiliario Logo" className="w-full h-full object-contain" />
             </div>
           </div>
 
