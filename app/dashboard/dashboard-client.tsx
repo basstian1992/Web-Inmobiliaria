@@ -339,6 +339,11 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
             <span className={`text-[11px] px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${infoPlanActual.css}`}>
               Plan: {infoPlanActual.nombre}
             </span>
+            {planActual === 'admin' && (
+              <a href="/admin" className="text-[11px] px-3 py-1 rounded-full border border-purple-500/50 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold uppercase tracking-wider transition-all shadow-lg shadow-purple-500/20 transform hover:scale-105">
+                👑 Panel Admin
+              </a>
+            )}
             <UserButton afterSignOutUrl="/" />
           </div>
         </div>

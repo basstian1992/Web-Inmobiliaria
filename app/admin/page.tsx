@@ -53,7 +53,11 @@ export default function AdminPage() {
     return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Cargando...</div>;
   }
 
-  const isAdmin = user?.emailAddresses?.some(e => e.emailAddress === 'b.alarconatenas@gmail.com' || e.emailAddress === 'basklian@gmail.com');
+  const isAdmin = user?.emailAddresses?.some(e => 
+    e.emailAddress === 'b.alarconatenas@gmail.com' || 
+    e.emailAddress === 'basklian@gmail.com' ||
+    e.emailAddress === 'b.alarcontenas@gmail.com'
+  );
 
   if (isLoaded && !isAdmin) {
     return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">No tienes permisos de administrador.</div>;

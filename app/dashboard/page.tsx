@@ -41,7 +41,8 @@ export default async function DashboardPage() {
   let dbUser = await db.prepare(`SELECT * FROM usuarios WHERE id = ?`).bind(user.id).first();
   const isAdmin = user.emailAddresses.some(e => 
     e.emailAddress === 'b.alarconatenas@gmail.com' || 
-    e.emailAddress === 'basklian@gmail.com'
+    e.emailAddress === 'basklian@gmail.com' ||
+    e.emailAddress === 'b.alarcontenas@gmail.com'
   );
   const planEsperado = isAdmin ? 'admin' : 'gratis';
 
