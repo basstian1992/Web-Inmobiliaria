@@ -53,6 +53,12 @@ export default function AdminPage() {
     return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Cargando...</div>;
   }
 
+  const isAdmin = user?.emailAddresses?.some(e => e.emailAddress === 'b.alarconatenas@gmail.com' || e.emailAddress === 'basklian@gmail.com');
+
+  if (isLoaded && !isAdmin) {
+    return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">No tienes permisos de administrador.</div>;
+  }
+
   // Protección básica cliente (la verdadera validación va en la API)
   // Asumimos que si no tiene acceso, la API rebotará el guardado o la lectura
   return (

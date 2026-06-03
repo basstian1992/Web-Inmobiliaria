@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     let dbUser = await db.prepare(`SELECT * FROM usuarios WHERE id = ?`).bind(user.id).first();
     
     // Si no está registrado en D1, lo registramos por seguridad
-    const isAdmin = user.emailAddresses.some(e => e.emailAddress === 'b.alarconatenas@gmail.com');
+    const isAdmin = user.emailAddresses.some(e => e.emailAddress === 'b.alarconatenas@gmail.com' || e.emailAddress === 'basklian@gmail.com');
     const planDefault = isAdmin ? 'admin' : 'gratis';
 
     if (!dbUser) {

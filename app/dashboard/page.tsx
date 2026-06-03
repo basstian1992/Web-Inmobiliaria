@@ -39,7 +39,10 @@ export default async function DashboardPage() {
 
   // 1. Verificar y registrar el perfil de usuario en la base de datos D1
   let dbUser = await db.prepare(`SELECT * FROM usuarios WHERE id = ?`).bind(user.id).first();
-  const isAdmin = user.emailAddresses.some(e => e.emailAddress === 'b.alarconatenas@gmail.com');
+  const isAdmin = user.emailAddresses.some(e => 
+    e.emailAddress === 'b.alarconatenas@gmail.com' || 
+    e.emailAddress === 'basklian@gmail.com'
+  );
   const planEsperado = isAdmin ? 'admin' : 'gratis';
 
   if (!dbUser) {

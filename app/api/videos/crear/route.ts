@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Propiedad no encontrada' }, { status: 404 });
     }
 
-    const isAdmin = user.emailAddresses.some(e => e.emailAddress === 'b.alarconatenas@gmail.com');
+    const isAdmin = user.emailAddresses.some(e => e.emailAddress === 'b.alarconatenas@gmail.com' || e.emailAddress === 'basklian@gmail.com');
     if (propiedad.usuario_id !== user.id && !isAdmin) {
       return NextResponse.json({ error: 'No tienes permisos para modificar esta propiedad' }, { status: 403 });
     }
