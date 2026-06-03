@@ -39,9 +39,9 @@ export default function ConsejosPage() {
           
           <div className="grid gap-6">
             <div className="dark:bg-slate-950 bg-white p-6 rounded-2xl border dark:border-slate-850 border-slate-200 shadow-md">
-              <h3 className="text-lg font-bold dark:text-indigo-400 text-indigo-700 mb-2">1. Regla de los 5.000 m² (DL 3.516)</h3>
+              <h3 className="text-lg font-bold dark:text-indigo-400 text-indigo-700 mb-2">1. Cesión de Derechos (Código Civil artículo 1901 y siguientes)</h3>
               <p className="dark:text-slate-400 text-slate-600 text-sm leading-relaxed">
-                En zonas rurales de Chile, la subdivisión mínima legal es de 5.000 m² (Media hectárea). Si te ofrecen un terreno rural de menor tamaño y te dicen que te darán "acciones y derechos", **ten cuidado**, podrías estar comprando en un loteo irregular o "loteo brujo", lo cual es un delito.
+                En algunas zonas rurales de Chile, la subdivisión mínima legal es de 5.000 m² (Media hectárea) dependiendo lo que establezca la subdivisión predial mínima de su Plano Regulador Regional.  Considera que si te ofrecen Cesión de derechos en un terreno, compras un porcentaje de derechos sobre ese inmueble, pero no obtienes inmediatamente el título de dominio como propietario. En algunas ocasiones se permite regularizar "cesiones de derecho" dependiendo de la cantidad de años ejerciendo uso sobre la misma, por ello para obtener título de dominio en Chile de una cesión de derechos, primero debes cumplir las condiciones exigidas por el Ministerio de Bienes Nacionales de Chile.
               </p>
             </div>
 

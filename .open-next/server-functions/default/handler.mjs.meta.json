@@ -3460,12 +3460,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
       "bytes": 12485,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
       "bytes": 12485,
       "imports": [],
       "format": "cjs"
@@ -3534,14 +3534,14 @@
           "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\configuraciones\\route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\pagos\\flow-create\\route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\propiedades\\crear\\route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\pagos\\flow-create\\route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/pagos/preference/route_client-reference-manifest.js",
@@ -5152,7 +5152,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/consejos/page.js": {
-      "bytes": 27157,
+      "bytes": 27598,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -8300,10 +8300,10 @@
         ".open-next/server-functions/default/.next/server/app/api/admin/configuraciones/route_client-reference-manifest.js": {
           "bytesInOutput": 11828
         },
-        ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
           "bytesInOutput": 11817
         },
-        ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
           "bytesInOutput": 11817
         },
         ".open-next/server-functions/default/.next/server/app/api/pagos/preference/route_client-reference-manifest.js": {
@@ -8460,7 +8460,7 @@
           "bytesInOutput": 57657
         },
         ".open-next/server-functions/default/.next/server/app/consejos/page.js": {
-          "bytesInOutput": 27331
+          "bytesInOutput": 27772
         },
         ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js": {
           "bytesInOutput": 740
@@ -8625,7 +8625,7 @@
           "bytesInOutput": 59589
         }
       },
-      "bytes": 3909423
+      "bytes": 3909864
     }
   }
 }
