@@ -24,9 +24,8 @@ export default function SiteHeader() {
         
         {/* Logo y Título */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl overflow-hidden border-2 dark:border-indigo-500/30 border-indigo-200 group-hover:border-indigo-500 transition-all duration-300 bg-white flex-shrink-0 shadow-lg group-hover:shadow-indigo-500/50 flex items-center justify-center">
-            {/* El usuario debe subir el nuevo logo a la carpeta public/logo.png */}
-            <img src="/logo.png" alt="Logo Propiedades y Parcelas" className="w-full h-full object-contain p-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 dark:border-indigo-500/30 border-indigo-200 group-hover:border-indigo-500 transition-all duration-300 bg-white flex-shrink-0 shadow-md flex items-center justify-center">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           </div>
           <div className="flex flex-col">
             <span className="text-lg sm:text-2xl font-black tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">

@@ -44,6 +44,14 @@ export default async function HomePage() {
       <section className="relative dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 bg-gradient-to-br from-indigo-50 via-white to-blue-50 dark:text-white text-slate-900 py-28 px-4 sm:px-6 lg:px-8 text-center overflow-hidden border-b dark:border-slate-800 border-slate-200 transition-colors">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
         <div className="max-w-4xl mx-auto space-y-6">
+          
+          {/* Logo Principal Gigante */}
+          <div className="flex justify-center mb-8">
+            <div className="w-56 h-56 sm:w-72 sm:h-72 lg:w-96 lg:h-96 rounded-[3rem] overflow-hidden bg-white shadow-2xl shadow-indigo-500/20 border-4 border-indigo-100 flex items-center justify-center p-6 transform transition-transform hover:scale-105 duration-500">
+              <img src="/logo.png" alt="Portal Inmobiliario Logo" className="w-full h-full object-contain" />
+            </div>
+          </div>
+
           <span className="dark:text-indigo-400 text-indigo-600 uppercase tracking-widest text-[10px] font-bold dark:bg-indigo-500/10 bg-indigo-100 px-4.5 py-2 rounded-full border dark:border-indigo-500/20 border-indigo-300">
             Terrenos, Casas y Locales Comerciales en Chile
           </span>
