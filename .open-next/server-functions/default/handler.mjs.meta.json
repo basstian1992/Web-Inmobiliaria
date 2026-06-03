@@ -3460,12 +3460,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
       "bytes": 12485,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
       "bytes": 12485,
       "imports": [],
       "format": "cjs"
@@ -3534,14 +3534,14 @@
           "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\configuraciones\\route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\propiedades\\crear\\route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\pagos\\flow-create\\route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "C:\\Users\\i7 11th\\Desktop\\Proyectos Programación\\Portal Inmobiliario\\portal-inmobiliario\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\propiedades\\crear\\route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/pagos/preference/route_client-reference-manifest.js",
@@ -3888,7 +3888,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/513.js": {
-      "bytes": 8489,
+      "bytes": 8528,
       "imports": [],
       "format": "cjs"
     },
@@ -5781,7 +5781,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/page.js": {
-      "bytes": 38915,
+      "bytes": 38913,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -5862,7 +5862,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/require.js": {
-      "bytes": 24207,
+      "bytes": 24244,
       "imports": [
         {
           "path": "path",
@@ -8300,10 +8300,10 @@
         ".open-next/server-functions/default/.next/server/app/api/admin/configuraciones/route_client-reference-manifest.js": {
           "bytesInOutput": 11828
         },
-        ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
           "bytesInOutput": 11817
         },
-        ".open-next/server-functions/default/.next/server/app/api/pagos/flow-create/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/propiedades/crear/route_client-reference-manifest.js": {
           "bytesInOutput": 11817
         },
         ".open-next/server-functions/default/.next/server/app/api/pagos/preference/route_client-reference-manifest.js": {
@@ -8385,7 +8385,7 @@
           "bytesInOutput": 1646
         },
         ".open-next/server-functions/default/.next/server/chunks/513.js": {
-          "bytesInOutput": 8630
+          "bytesInOutput": 8669
         },
         ".open-next/server-functions/default/.next/server/chunks/548.js": {
           "bytesInOutput": 71689
@@ -8520,10 +8520,10 @@
           "bytesInOutput": 3585
         },
         ".open-next/server-functions/default/.next/server/app/page.js": {
-          "bytesInOutput": 39175
+          "bytesInOutput": 39173
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/require.js": {
-          "bytesInOutput": 17639
+          "bytesInOutput": 17676
         },
         ".open-next/server-functions/default/node_modules/next/dist/lib/wait.js": {
           "bytesInOutput": 341
@@ -8625,7 +8625,7 @@
           "bytesInOutput": 59589
         }
       },
-      "bytes": 3909349
+      "bytes": 3909423
     }
   }
 }

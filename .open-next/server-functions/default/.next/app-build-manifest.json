@@ -12,18 +12,11 @@
       "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
       "static/chunks/964-9e7fd12428968086.js",
       "static/chunks/main-app-c40b30e0205ef510.js",
-      "static/css/63c2c9c0c3e02beb.css",
+      "static/css/1dcc466f5ff59018.css",
       "static/chunks/874-437a265a67d6cfee.js",
       "static/chunks/453-55aab3a611090248.js",
       "static/chunks/179-45e8b28c8ff2b392.js",
-      "static/chunks/app/layout-369ebd3c072f6a55.js"
-    ],
-    "/api/pagos/flow-create/route": [
-      "static/chunks/webpack-c2123824f6b6c938.js",
-      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
-      "static/chunks/964-9e7fd12428968086.js",
-      "static/chunks/main-app-c40b30e0205ef510.js",
-      "static/chunks/app/api/pagos/flow-create/route-345164fe136f1fb6.js"
+      "static/chunks/app/layout-cb9033eabb975bac.js"
     ],
     "/api/pagos/preference/route": [
       "static/chunks/webpack-c2123824f6b6c938.js",
@@ -32,12 +25,12 @@
       "static/chunks/main-app-c40b30e0205ef510.js",
       "static/chunks/app/api/pagos/preference/route-345164fe136f1fb6.js"
     ],
-    "/api/upload/route": [
+    "/api/pagos/flow-create/route": [
       "static/chunks/webpack-c2123824f6b6c938.js",
       "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
       "static/chunks/964-9e7fd12428968086.js",
       "static/chunks/main-app-c40b30e0205ef510.js",
-      "static/chunks/app/api/upload/route-345164fe136f1fb6.js"
+      "static/chunks/app/api/pagos/flow-create/route-345164fe136f1fb6.js"
     ],
     "/api/propiedades/crear/route": [
       "static/chunks/webpack-c2123824f6b6c938.js",
@@ -46,6 +39,13 @@
       "static/chunks/main-app-c40b30e0205ef510.js",
       "static/chunks/app/api/propiedades/crear/route-345164fe136f1fb6.js"
     ],
+    "/api/upload/route": [
+      "static/chunks/webpack-c2123824f6b6c938.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-9e7fd12428968086.js",
+      "static/chunks/main-app-c40b30e0205ef510.js",
+      "static/chunks/app/api/upload/route-345164fe136f1fb6.js"
+    ],
     "/api/videos/crear/route": [
       "static/chunks/webpack-c2123824f6b6c938.js",
       "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
@@ -53,19 +53,19 @@
       "static/chunks/main-app-c40b30e0205ef510.js",
       "static/chunks/app/api/videos/crear/route-345164fe136f1fb6.js"
     ],
-    "/api/webhook-pagos/route": [
-      "static/chunks/webpack-c2123824f6b6c938.js",
-      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
-      "static/chunks/964-9e7fd12428968086.js",
-      "static/chunks/main-app-c40b30e0205ef510.js",
-      "static/chunks/app/api/webhook-pagos/route-345164fe136f1fb6.js"
-    ],
     "/api/webhook-flow/route": [
       "static/chunks/webpack-c2123824f6b6c938.js",
       "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
       "static/chunks/964-9e7fd12428968086.js",
       "static/chunks/main-app-c40b30e0205ef510.js",
       "static/chunks/app/api/webhook-flow/route-345164fe136f1fb6.js"
+    ],
+    "/api/webhook-pagos/route": [
+      "static/chunks/webpack-c2123824f6b6c938.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-9e7fd12428968086.js",
+      "static/chunks/main-app-c40b30e0205ef510.js",
+      "static/chunks/app/api/webhook-pagos/route-345164fe136f1fb6.js"
     ],
     "/api/health/route": [
       "static/chunks/webpack-c2123824f6b6c938.js",

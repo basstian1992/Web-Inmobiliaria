@@ -24,7 +24,7 @@ export default function SiteHeader() {
         
         {/* Logo y Título */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm group-hover:shadow-md group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-all duration-300 bg-white flex-shrink-0 flex items-center justify-center">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm group-hover:shadow-md group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-all duration-300 dark:bg-slate-900/60 bg-white/80 backdrop-blur-sm flex-shrink-0 flex items-center justify-center">
             <img src="/logo.png?v=4" alt="Logo" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           </div>
           <div className="flex flex-col">
