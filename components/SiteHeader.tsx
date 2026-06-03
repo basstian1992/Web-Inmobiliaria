@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import { ThemeToggle } from './theme-toggle';
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const { isLoaded, isSignedIn, user } = useUser();
 
   // No mostrar el header principal en el dashboard o panel de admin
   if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
@@ -44,30 +43,26 @@ export default function SiteHeader() {
           </Link>
           <ThemeToggle />
           
-          {!isLoaded ? (
-            <div className="w-24 h-8 dark:bg-slate-800 bg-slate-200 animate-pulse rounded-lg"></div>
-          ) : isSignedIn ? (
-            <>
-              <Link href="/dashboard" className="text-xs sm:text-sm font-bold dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-indigo-600 transition-colors">
-                Mi Panel
-              </Link>
-              <UserButton afterSignOutUrl="/" />
-            </>
-          ) : (
-            <>
-              <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
-                <button className="text-xs font-bold dark:text-slate-400 text-slate-500 dark:hover:text-indigo-400 hover:text-indigo-600 transition-colors hidden sm:block">
-                  Ingresar como Administrador
-                </button>
-              </SignInButton>
-              
-              <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
-                <button className="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs sm:text-sm py-2 px-4 sm:py-2.5 sm:px-6 rounded-xl transition-all shadow-md hover:shadow-indigo-500/20 uppercase tracking-wide transform hover:-translate-y-0.5">
-                  Nuevo Vendedor
-                </button>
-              </SignUpButton>
-            </>
-          )}
+          <SignedIn>
+            <Link href="/dashboard" className="text-xs sm:text-sm font-bold dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-indigo-600 transition-colors">
+              Mi Panel
+            </Link>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+          
+          <SignedOut>
+            <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+              <button className="text-xs font-bold dark:text-slate-400 text-slate-500 dark:hover:text-indigo-400 hover:text-indigo-600 transition-colors hidden sm:block">
+                Ingresar como Administrador
+              </button>
+            </SignInButton>
+            
+            <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
+              <button className="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs sm:text-sm py-2 px-4 sm:py-2.5 sm:px-6 rounded-xl transition-all shadow-md hover:shadow-indigo-500/20 uppercase tracking-wide transform hover:-translate-y-0.5">
+                Nuevo Vendedor
+              </button>
+            </SignUpButton>
+          </SignedOut>
         </div>
 
       </div>
