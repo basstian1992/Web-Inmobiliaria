@@ -40,59 +40,70 @@ export default async function HomePage() {
         — Consultoría privada y pública en Chile.
       </div>
 
-      {/* 1. SECCIÓN HERO (Buscador Premium) */}
-      <section className="relative dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 bg-gradient-to-br from-indigo-50 via-white to-blue-50 dark:text-white text-slate-900 py-28 px-4 sm:px-6 lg:px-8 text-center overflow-hidden border-b dark:border-slate-800 border-slate-200 transition-colors">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-        <div className="max-w-4xl mx-auto space-y-6">
+      {/* 1. SECCIÓN HERO (Expert Level Design) */}
+      <section className="relative dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 bg-gradient-to-br from-indigo-50 via-white to-indigo-50/50 dark:text-white text-slate-900 py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 text-center overflow-hidden border-b dark:border-slate-800 border-indigo-100 transition-colors">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+        <div className="max-w-5xl mx-auto space-y-8 lg:space-y-10 relative z-10">
           
-          {/* Logo Principal Gigante */}
-          <div className="flex justify-center mb-8">
-            <div className="w-56 h-56 sm:w-72 sm:h-72 lg:w-96 lg:h-96 rounded-[3rem] overflow-hidden bg-white shadow-2xl shadow-indigo-500/20 border-4 border-indigo-100 flex items-center justify-center p-6 transform transition-transform hover:scale-105 duration-500">
-              <img src="/logo.png" alt="Portal Inmobiliario Logo" className="w-full h-full object-contain" />
+          {/* Logo Principal Gigante Flotante */}
+          <div className="flex justify-center mb-6 sm:mb-10">
+            <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-[2.5rem] sm:rounded-[3.5rem] overflow-hidden bg-white/60 dark:bg-slate-900/50 backdrop-blur-md shadow-2xl shadow-indigo-500/10 dark:shadow-indigo-500/5 border border-white/40 dark:border-slate-700 flex items-center justify-center p-4 sm:p-6 transform transition-all hover:scale-105 hover:shadow-indigo-500/20 duration-500">
+              <img src="/logo.png?v=2" alt="Portal Inmobiliario Logo" className="w-full h-full object-contain" />
             </div>
           </div>
 
-          <span className="dark:text-indigo-400 text-indigo-600 uppercase tracking-widest text-[10px] font-bold dark:bg-indigo-500/10 bg-indigo-100 px-4.5 py-2 rounded-full border dark:border-indigo-500/20 border-indigo-300">
-            Terrenos, Casas y Locales Comerciales en Chile
-          </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r dark:from-white dark:via-slate-100 dark:to-blue-300 from-slate-900 via-indigo-900 to-blue-800 leading-tight">
-            Propiedades, Locales Comerciales, Compra-Venta en Chile
-          </h1>
-          <p className="text-base sm:text-lg dark:text-slate-400 text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Plataforma exclusiva dirigida a quienes buscan comprar, vender o arrendar terrenos rurales, parcelas de agrado, casas de alto estándar y locales comerciales con saneamiento legal garantizado.
-          </p>
+          <div className="space-y-4">
+            <span className="inline-block dark:text-indigo-400 text-indigo-600 uppercase tracking-[0.2em] text-[10px] sm:text-xs font-black dark:bg-indigo-500/10 bg-indigo-50 px-5 py-2.5 rounded-full border dark:border-indigo-500/20 border-indigo-200 shadow-sm">
+              Propiedades de Alto Estándar en Chile
+            </span>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r dark:from-white dark:via-slate-200 dark:to-indigo-300 from-slate-900 via-indigo-900 to-indigo-700 leading-tight pb-2">
+              Encuentra el lugar perfecto para tu próximo proyecto
+            </h1>
+            <p className="text-sm sm:text-lg dark:text-slate-400 text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Plataforma exclusiva dirigida a quienes buscan comprar, vender o arrendar terrenos rurales, parcelas de agrado, casas de alto estándar y locales comerciales con saneamiento legal garantizado.
+            </p>
+          </div>
 
           {/* Barra de Búsqueda UX Premium */}
-          <form action="/buscar" method="GET" className="dark:bg-slate-950/80 bg-white/80 backdrop-blur-md p-3 rounded-2xl border dark:border-slate-850 border-slate-200 shadow-2xl max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 dark:text-slate-200 text-slate-800 transition-colors">
-            <select name="tipo" className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
-              <option value="">¿Qué buscas? (Todo)</option>
-              <option value="terreno">Terrenos / Parcelas</option>
-              <option value="casa">Casas</option>
-              <option value="local">Locales Comerciales</option>
-            </select>
-            <select name="region" className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-300 p-3.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-300 text-slate-700 transition-colors">
-              <option value="">Ubicación (Todas)</option>
-              <option value="Arica y Parinacota">Región de Arica y Parinacota</option>
-              <option value="Tarapacá">Región de Tarapacá</option>
-              <option value="Antofagasta">Región de Antofagasta</option>
-              <option value="Atacama">Región de Atacama</option>
-              <option value="Coquimbo">Región de Coquimbo</option>
-              <option value="Valparaíso">Región de Valparaíso</option>
-              <option value="Metropolitana de Santiago">Región Metropolitana de Santiago</option>
-              <option value="Libertador Gral. Bernardo O'Higgins">Región del Libertador Gral. B. O'Higgins</option>
-              <option value="Maule">Región del Maule</option>
-              <option value="Ñuble">Región de Ñuble</option>
-              <option value="Biobío">Región del Biobío</option>
-              <option value="La Araucanía">Región de La Araucanía</option>
-              <option value="Los Ríos">Región de Los Ríos</option>
-              <option value="Los Lagos">Región de Los Lagos</option>
-              <option value="Aysén">Región de Aysén del Gral. Carlos Ibáñez del Campo</option>
-              <option value="Magallanes">Región de Magallanes y de la Antártica Chilena</option>
-            </select>
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3.5 rounded-xl transition-all shadow-md hover:shadow-indigo-500/20 text-xs tracking-wider uppercase cursor-pointer">
-              Buscar Propiedades
-            </button>
-          </form>
+          <div className="pt-6 sm:pt-8">
+            <form action="/buscar" method="GET" className="dark:bg-slate-900/60 bg-white/70 backdrop-blur-2xl p-2 sm:p-3 rounded-2xl sm:rounded-3xl border border-white/50 dark:border-slate-700 shadow-2xl shadow-indigo-900/5 dark:shadow-black/50 max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 dark:text-slate-200 text-slate-800 transition-all hover:shadow-indigo-900/10 hover:bg-white/90 dark:hover:bg-slate-900/80">
+              <div className="relative group">
+                <select name="tipo" className="w-full appearance-none bg-transparent dark:bg-transparent border border-transparent hover:border-slate-200 dark:hover:border-slate-700 p-4 sm:p-5 rounded-xl sm:rounded-2xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-200 text-slate-700 transition-colors cursor-pointer">
+                  <option value="" className="dark:bg-slate-900">¿Qué buscas? (Todo)</option>
+                  <option value="terreno" className="dark:bg-slate-900">Terrenos / Parcelas</option>
+                  <option value="casa" className="dark:bg-slate-900">Casas</option>
+                  <option value="local" className="dark:bg-slate-900">Locales Comerciales</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">▼</div>
+              </div>
+              <div className="relative group">
+                <select name="region" className="w-full appearance-none bg-transparent dark:bg-transparent border border-transparent hover:border-slate-200 dark:hover:border-slate-700 p-4 sm:p-5 rounded-xl sm:rounded-2xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-slate-200 text-slate-700 transition-colors cursor-pointer">
+                  <option value="" className="dark:bg-slate-900">Ubicación (Todas)</option>
+                  <option value="Arica y Parinacota" className="dark:bg-slate-900">Arica y Parinacota</option>
+                  <option value="Tarapacá" className="dark:bg-slate-900">Tarapacá</option>
+                  <option value="Antofagasta" className="dark:bg-slate-900">Antofagasta</option>
+                  <option value="Atacama" className="dark:bg-slate-900">Atacama</option>
+                  <option value="Coquimbo" className="dark:bg-slate-900">Coquimbo</option>
+                  <option value="Valparaíso" className="dark:bg-slate-900">Valparaíso</option>
+                  <option value="Metropolitana de Santiago" className="dark:bg-slate-900">Región Metropolitana</option>
+                  <option value="Libertador Gral. Bernardo O'Higgins" className="dark:bg-slate-900">O'Higgins</option>
+                  <option value="Maule" className="dark:bg-slate-900">Maule</option>
+                  <option value="Ñuble" className="dark:bg-slate-900">Ñuble</option>
+                  <option value="Biobío" className="dark:bg-slate-900">Biobío</option>
+                  <option value="La Araucanía" className="dark:bg-slate-900">La Araucanía</option>
+                  <option value="Los Ríos" className="dark:bg-slate-900">Los Ríos</option>
+                  <option value="Los Lagos" className="dark:bg-slate-900">Los Lagos</option>
+                  <option value="Aysén" className="dark:bg-slate-900">Aysén</option>
+                  <option value="Magallanes" className="dark:bg-slate-900">Magallanes</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">▼</div>
+              </div>
+              <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all shadow-lg hover:shadow-indigo-500/30 text-sm tracking-widest uppercase cursor-pointer flex items-center justify-center gap-2 group/btn">
+                <span>Buscar</span>
+                <span className="transform transition-transform group-hover/btn:translate-x-1">→</span>
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 
