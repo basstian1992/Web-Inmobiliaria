@@ -3,6 +3,11 @@ main = ".open-next/worker.js"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+routes = [
+  { pattern = "propiedadesyparcelas.cl", custom_domain = true },
+  { pattern = "www.propiedadesyparcelas.cl", custom_domain = true },
+]
+
 [vars]
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_YmVsb3ZlZC13ZWV2aWwtNjYuY2xlcmsuYWNjb3VudHMuZGV2JA"
 
