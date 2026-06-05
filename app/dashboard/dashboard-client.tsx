@@ -238,6 +238,62 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
     setVideoFiles(videoFiles.filter((_, i) => i !== index));
   };
 
+  // Editar propiedad existente
+  const [editId, setEditId] = useState<string | null>(null);
+  const [loadingEdit, setLoadingEdit] = useState(false);
+
+  const startEdit = async (propiedadId: string) => {
+    setLoadingEdit(true);
+    try {
+      const res = await fetch(`/api/propiedades/${propiedadId}`);
+      if (!res.ok) throw new Error('Error al cargar propiedad');
+      const data = await res.json();
+      const p = data.propiedad;
+      setTitulo(p.titulo || '');
+      setDescripcion(p.descripcion || '');
+      setTipoOperacion(p.tipo_operacion || 'venta');
+      setTipoPropiedad(p.tipo_propiedad || 'terreno');
+      setPrecioPesos(p.precio_pesos?.toString() || '');
+      setPrecioUf(p.precio_uf?.toString() || '');
+      setRegion(p.region || 'Región Metropolitana');
+      setComuna(p.comuna || 'Santiago');
+      setHabitaciones(p.habitaciones?.toString() || '0');
+      setBanos(p.banos?.toString() || '0');
+      setSuperficieTotal(p.superficie_total?.toString() || '');
+      setContactoNombre(p.contacto_nombre || userNombre);
+      setContactoTelefono(p.contacto_telefono || '');
+      setContactoEmail(p.contacto_email || userProfile.email);
+      setObservaciones(p.observaciones || '');
+      setDocumentos(Array.isArray(p.documentos) ? p.documentos : []);
+      setEditId(propiedadId);
+      setActiveTab('publicar');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e: any) {
+      setErrorMessage('Error al cargar datos de la propiedad: ' + e.message);
+    }
+    setLoadingEdit(false);
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setTitulo('');
+    setDescripcion('');
+    setTipoOperacion('venta');
+    setTipoPropiedad('terreno');
+    setPrecioPesos('');
+    setPrecioUf('');
+    setRegion('Región Metropolitana');
+    setComuna('Santiago');
+    setHabitaciones('0');
+    setBanos('0');
+    setSuperficieTotal('');
+    setContactoNombre(userNombre);
+    setContactoTelefono('');
+    setContactoEmail(userProfile.email);
+    setObservaciones('');
+    setDocumentos([]);
+  };
+
   // Gestión de media (fotos/videos) de propiedades existentes
   const [managingPropertyId, setManagingPropertyId] = useState<string | null>(null);
   const [propertyPhotos, setPropertyPhotos] = useState<any[]>([]);
@@ -245,15 +301,25 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
   const [mediaLoading, setMediaLoading] = useState(false);
   const [deletingMediaId, setDeletingMediaId] = useState<string | null>(null);
 
+  const [visitStats, setVisitStats] = useState<{ total: number } | null>(null);
+
   const openMediaManager = async (propiedadId: string) => {
     setManagingPropertyId(propiedadId);
     setMediaLoading(true);
+    setVisitStats(null);
     try {
-      const res = await fetch(`/api/propiedades/${propiedadId}/media`);
-      if (res.ok) {
-        const data = await res.json();
+      const [mediaRes, visitRes] = await Promise.all([
+        fetch(`/api/propiedades/${propiedadId}/media`),
+        fetch(`/api/visitas/estadisticas?propiedadId=${propiedadId}`),
+      ]);
+      if (mediaRes.ok) {
+        const data = await mediaRes.json();
         setPropertyPhotos(data.fotos || []);
         setPropertyVideos(data.videos || []);
+      }
+      if (visitRes.ok) {
+        const visitData = await visitRes.json();
+        setVisitStats(visitData);
       }
     } catch (e) {
       console.error('Error al cargar media:', e);
@@ -355,37 +421,70 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
     }
 
     try {
-      // 1. Crear propiedad
-      const propiedadResponse = await fetch('/api/propiedades/crear', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tipo_operacion: tipoOperacion,
-          tipo_propiedad: tipoPropiedad,
-          titulo,
-          descripcion,
-          precio_pesos: precioPesos || null,
-          precio_uf: precioUf || null,
-          region,
-          comuna,
-          habitaciones: parseInt(habitaciones) || 0,
-          banos: parseInt(banos) || 0,
-          superficie_total: parseInt(superficieTotal) || 0,
-          contacto_nombre: contactoNombre,
-          contacto_telefono: contactoTelefono,
-          contacto_email: contactoEmail,
-          observaciones,
-          documentos,
-        }),
-      });
+      // 1. Crear o actualizar propiedad
+      const isEditing = editId !== null;
+      let propiedadId: string;
 
-      const propiedadData = await propiedadResponse.json();
+      if (isEditing) {
+        propiedadId = editId;
+        const updateRes = await fetch(`/api/propiedades/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo_operacion: tipoOperacion,
+            tipo_propiedad: tipoPropiedad,
+            titulo,
+            descripcion,
+            precio_pesos: precioPesos || null,
+            precio_uf: precioUf || null,
+            region,
+            comuna,
+            habitaciones: parseInt(habitaciones) || 0,
+            banos: parseInt(banos) || 0,
+            superficie_total: parseInt(superficieTotal) || 0,
+            contacto_nombre: contactoNombre,
+            contacto_telefono: contactoTelefono,
+            contacto_email: contactoEmail,
+            observaciones,
+            documentos,
+          }),
+        });
+        if (!updateRes.ok) {
+          const errData = await updateRes.json().catch(() => ({}));
+          throw new Error(errData.error || 'Error al actualizar la propiedad');
+        }
+      } else {
+        const propiedadResponse = await fetch('/api/propiedades/crear', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo_operacion: tipoOperacion,
+            tipo_propiedad: tipoPropiedad,
+            titulo,
+            descripcion,
+            precio_pesos: precioPesos || null,
+            precio_uf: precioUf || null,
+            region,
+            comuna,
+            habitaciones: parseInt(habitaciones) || 0,
+            banos: parseInt(banos) || 0,
+            superficie_total: parseInt(superficieTotal) || 0,
+            contacto_nombre: contactoNombre,
+            contacto_telefono: contactoTelefono,
+            contacto_email: contactoEmail,
+            observaciones,
+            documentos,
+          }),
+        });
 
-      if (!propiedadResponse.ok) {
-        throw new Error(propiedadData.error || 'Ocurrió un error al crear la propiedad');
+        const propiedadData = await propiedadResponse.json();
+
+        if (!propiedadResponse.ok) {
+          throw new Error(propiedadData.error || 'Ocurrió un error al crear la propiedad');
+        }
+
+        propiedadId = propiedadData.propiedadId;
       }
-
-      const { propiedadId } = propiedadData;
 
       // 2. Comprimir y subir fotos con Canvas WebP Client-side
       const failedUploads: string[] = [];
@@ -462,23 +561,13 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
       }
 
       if (failedUploads.length === 0) {
-        setSuccessMessage('¡Felicidades! Tu anuncio ha sido publicado con éxito y ya está optimizado para SEO.');
+        setSuccessMessage(isEditing ? '¡Propiedad actualizada con éxito! Los cambios ya están visibles.' : '¡Felicidades! Tu anuncio ha sido publicado con éxito y ya está optimizado para SEO.');
       } else {
-        setSuccessMessage(`Anuncio publicado, pero ${failedUploads.length} archivo(s) no pudieron subirse. Revisa los errores abajo e intenta de nuevo.`);
+        setSuccessMessage(`Anuncio ${isEditing ? 'actualizado' : 'publicado'}, pero ${failedUploads.length} archivo(s) no pudieron subirse. Revisa los errores abajo e intenta de nuevo.`);
       }
       
       // Limpiar Formulario
-      setTitulo('');
-      setDescripcion('');
-      setPrecioPesos('');
-      setPrecioUf('');
-      setSuperficieTotal('');
-      setContactoTelefono('');
-      setObservaciones('');
-      setDocumentos([]);
-      setFotosFiles([]);
-      setVideosUrls([]);
-      setVideoFiles([]);
+      cancelEdit();
 
       // Redirigir a pestaña de propiedades
       setTimeout(() => {
@@ -700,7 +789,14 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                           </div>
                         </div>
 
-                        <div className="p-6 bg-slate-950 border-t border-slate-850/60 flex items-center justify-between gap-2">
+                        <div className="p-6 bg-slate-950 border-t border-slate-850/60 flex flex-wrap items-center justify-between gap-2">
+                          <button
+                            onClick={() => startEdit(p.id)}
+                            disabled={loadingEdit}
+                            className="text-center bg-slate-700 hover:bg-slate-600 text-white font-bold text-[10px] py-2.5 px-3 rounded-xl transition-all disabled:opacity-50"
+                          >
+                            ✏️ Editar
+                          </button>
                           <button
                             onClick={() => openMediaManager(p.id)}
                             className="text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] py-2.5 px-3 rounded-xl transition-all"
@@ -710,9 +806,9 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                           <a
                             href={`/${p.tipo_operacion}/${p.comuna}/${p.id}`}
                             target="_blank"
-                            className="text-center w-full bg-slate-900 border border-slate-850 hover:bg-slate-800 text-slate-300 font-bold text-xs py-2.5 rounded-xl transition-all"
+                            className="text-center bg-slate-900 border border-slate-850 hover:bg-slate-800 text-slate-300 font-bold text-[10px] py-2.5 px-3 rounded-xl transition-all"
                           >
-                            Ver Ficha
+                            👁 Ver
                           </a>
                           {!impulsado && planActual === 'gratis' && (
                             <button
@@ -729,12 +825,19 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                           <div className="border-t border-slate-800/80 p-6 bg-slate-900/50">
                             <div className="flex items-center justify-between mb-4">
                               <h4 className="text-sm font-bold text-indigo-400">Gestionar Fotos y Videos</h4>
-                              <button
-                                onClick={closeMediaManager}
-                                className="text-slate-400 hover:text-white text-xs font-bold"
-                              >
-                                Cerrar ✕
-                              </button>
+                              <div className="flex items-center gap-3">
+                                {visitStats && (
+                                  <span className="text-[10px] text-slate-400 font-bold">
+                                    👁 {visitStats.total} visitas
+                                  </span>
+                                )}
+                                <button
+                                  onClick={closeMediaManager}
+                                  className="text-slate-400 hover:text-white text-xs font-bold"
+                                >
+                                  Cerrar ✕
+                                </button>
+                              </div>
                             </div>
                             {mediaLoading ? (
                               <p className="text-slate-400 text-xs">Cargando media...</p>
@@ -830,11 +933,26 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
           </div>
         )}
 
-        {/* TABS 2: NUEVA PUBLICACION */}
+        {/* TABS 2: NUEVA PUBLICACION / EDITAR */}
         {activeTab === 'publicar' && (
           <div className="max-w-4xl mx-auto bg-slate-950 border border-slate-850 rounded-3xl p-6 sm:p-10 shadow-2xl">
-            <h2 className="text-2xl font-black text-white mb-2">Publica tu Anuncio Comercial</h2>
-            <p className="text-slate-400 text-sm mb-8">Completa el formulario premium. Tu anuncio contará con metadatos indexables automáticamente y carga optimizada de fotos.</p>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-black text-white">
+                {editId ? '✏️ Editar Anuncio' : 'Publica tu Anuncio Comercial'}
+              </h2>
+              {editId && (
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="text-slate-400 hover:text-white text-xs font-bold border border-slate-800 px-3 py-1.5 rounded-xl transition-all"
+                >
+                  Cancelar edición
+                </button>
+              )}
+            </div>
+            <p className="text-slate-400 text-sm mb-8">
+              {editId ? 'Modifica los datos y guarda los cambios.' : 'Completa el formulario premium. Tu anuncio contará con metadatos indexables automáticamente y carga optimizada de fotos.'}
+            </p>
 
             <form onSubmit={handlePublish} className="space-y-8">
               
@@ -1188,7 +1306,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                   disabled={isSubmitting}
                   className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 disabled:opacity-50 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-indigo-600/10 text-sm uppercase tracking-wider cursor-pointer"
                 >
-                  {isSubmitting ? (ffmpegLoading ? 'Cargando compresor de video...' : 'Comprimiendo y subiendo archivos...') : '🚀 Publicar Aviso Optimizado para SEO'}
+                  {isSubmitting ? (ffmpegLoading ? 'Cargando compresor de video...' : 'Comprimiendo y subiendo archivos...') : (editId ? '💾 Guardar Cambios' : '🚀 Publicar Aviso Optimizado para SEO')}
                 </button>
               </div>
 

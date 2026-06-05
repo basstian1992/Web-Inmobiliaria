@@ -20,6 +20,14 @@
   },
   "dynamicRoutes": [
     {
+      "page": "/api/propiedades/[id]",
+      "regex": "^/api/propiedades/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/propiedades/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/propiedades/[id]/media",
       "regex": "^/api/propiedades/([^/]+?)/media(?:/)?$",
       "routeKeys": {

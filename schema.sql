@@ -58,3 +58,11 @@ CREATE TABLE IF NOT EXISTS configuraciones (
     fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS visitas (
+    id TEXT PRIMARY KEY,
+    propiedad_id TEXT NOT NULL,
+    fecha TEXT NOT NULL,
+    contador INTEGER DEFAULT 1,
+    UNIQUE(propiedad_id, fecha)
+);
+

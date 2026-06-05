@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import GalleryLightbox from '@/components/GalleryLightbox';
+import VisitTracker from '@/components/VisitTracker';
 
 interface Props {
   params: Promise<{
@@ -28,7 +29,7 @@ function getEmbedUrl(url: string) {
 
 // 1. GENERACIÓN DE METADATOS DINÁMICOS PARA GOOGLE (SEO SENIOR)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { operacion, comuna, slug } = await params;
   let db: any = null;
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
@@ -40,7 +41,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!db) return {};
 
   const propiedad = await db.prepare(
-    `SELECT titulo, descripcion, comuna, region, tipo_propiedad, tipo_operacion FROM propiedades WHERE slug = ?`
+    `SELECT p.titulo, p.descripcion, p.comuna, p.region, p.tipo_propiedad, p.tipo_operacion, p.precio_pesos, p.precio_uf,
+            (SELECT url_r2 FROM fotos WHERE propiedad_id = p.id ORDER BY es_principal DESC LIMIT 1) as foto_principal
+     FROM propiedades p WHERE slug = ?`
   ).bind(slug).first();
 
   if (!propiedad) return {};
@@ -49,23 +52,132 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tituloSEO = `${propTipoLabel} en ${propiedad.tipo_operacion === 'venta' ? 'Venta' : propiedad.tipo_operacion === 'compra' ? 'Compra' : 'Arriendo'} | ${propiedad.titulo} en ${propiedad.comuna} | Propiedades & Parcelas Chile`;
   const descSEO = `${propiedad.descripcion.substring(0, 155)}... Encuentra parcelas en venta, arriendos de locales y casas en Chile en propiedadesyparcelas.cl`;
 
+  const operacionLabel = propiedad.tipo_operacion === 'venta' ? 'venta' : propiedad.tipo_operacion === 'compra' ? 'compra' : 'arriendo';
+  const keywords = `${propTipoLabel} en ${operacionLabel}, ${propTipoLabel} en ${propiedad.comuna}, ${propiedad.tipo_operacion} de ${propTipoLabel.toLowerCase()}, propiedades en ${propiedad.comuna}, ${propiedad.region}, corretaje, inmobiliaria Chile, propiedades y parcelas`;
+
   return {
     title: tituloSEO,
     description: descSEO,
-    keywords: 'parcela, propiedades, corretaje, venta, compra, casa, compra de casa, compra de terreno, terreno en venta, venta de casa, venta de propiedad, local comercial, arriendo de local comercial, compra de local comercial, derecho a llave, compraventa, propiedades, terrenos en chile',
+    keywords,
     openGraph: {
       title: tituloSEO,
       description: descSEO,
       type: 'website',
       locale: 'es_CL',
-      url: `https://www.propiedadesyparcelas.cl/${propiedad.tipo_operacion}/${propiedad.comuna}/${slug}`,
+      siteName: 'Propiedades & Parcelas Chile',
+      url: `https://www.propiedadesyparcelas.cl/${operacion}/${comuna}/${slug}`,
+      images: propiedad.foto_principal ? [{ url: propiedad.foto_principal, width: 1200, height: 630 }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: tituloSEO,
+      description: descSEO,
+      images: propiedad.foto_principal ? [propiedad.foto_principal] : [],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
+    },
+    alternates: {
+      canonical: `https://www.propiedadesyparcelas.cl/${operacion}/${comuna}/${slug}`,
+    },
+    other: {
+      'og:price:amount': propiedad.precio_uf?.toString() || propiedad.precio_pesos?.toString() || '',
+      'og:price:currency': propiedad.precio_uf ? 'CLF' : 'CLP',
     },
   };
 }
 
+// Helper to build JSON-LD schemas
+function buildPropertySchemas(propiedad: any, operacion: string, comuna: string, slug: string, fotos: any[]) {
+  const breadcrumbLabel = propiedad.tipo_operacion === 'venta' ? 'Venta' : propiedad.tipo_operacion === 'compra' ? 'Compra' : 'Arriendo';
+
+  // BreadcrumbList
+  const breadcrumb = {
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Inicio', 'item': 'https://www.propiedadesyparcelas.cl/' },
+      { '@type': 'ListItem', 'position': 2, 'name': breadcrumbLabel, 'item': `https://www.propiedadesyparcelas.cl/buscar?operacion=${propiedad.tipo_operacion}` },
+      { '@type': 'ListItem', 'position': 3, 'name': propiedad.comuna, 'item': `https://www.propiedadesyparcelas.cl/buscar?comuna=${propiedad.comuna}` },
+      { '@type': 'ListItem', 'position': 4, 'name': propiedad.titulo }
+    ]
+  };
+
+  // RealEstateListing
+  const isTerreno = propiedad.tipo_propiedad === 'terreno';
+  const listingType = isTerreno ? 'Land' : 'SingleFamilyResidence';
+  const listing: any = {
+    '@type': listingType,
+    'address': {
+      '@type': 'PostalAddress',
+      'addressLocality': propiedad.comuna,
+      'addressRegion': propiedad.region,
+      'addressCountry': 'CL'
+    }
+  };
+
+  if (isTerreno) {
+    listing.landArea = {
+      '@type': 'QuantitativeValue',
+      'value': propiedad.superficie_total,
+      'unitCode': 'MTK'
+    };
+  } else {
+    listing.numberOfRooms = propiedad.habitaciones;
+    listing.numberOfBathroomsTotal = propiedad.banos;
+    listing.floorSize = {
+      '@type': 'QuantitativeValue',
+      'value': propiedad.superficie_total,
+      'unitCode': 'MTK'
+    };
+  }
+
+  const realEstateListing: any = {
+    '@type': 'RealEstateListing',
+    'name': propiedad.titulo,
+    'description': propiedad.descripcion,
+    'datePosted': propiedad.fecha_publicacion,
+    'url': `https://www.propiedadesyparcelas.cl/${operacion}/${comuna}/${slug}`,
+    'listing': listing,
+    'offers': {
+      '@type': 'Offer',
+      'price': propiedad.precio_uf || propiedad.precio_pesos,
+      'priceCurrency': propiedad.precio_uf ? 'CLF' : 'CLP',
+      'availability': 'https://schema.org/InStock'
+    }
+  };
+
+  if (fotos && fotos.length > 0) {
+    realEstateListing.image = fotos[0].url_r2;
+  }
+
+  // RealEstateAgent
+  const organization = {
+    '@type': 'RealEstateAgent',
+    'name': 'Propiedades & Parcelas Chile',
+    'url': 'https://www.propiedadesyparcelas.cl/',
+    'areaServed': { '@type': 'Country', 'name': 'Chile' }
+  };
+
+  // WebSite with SearchAction
+  const website = {
+    '@type': 'WebSite',
+    'name': 'Propiedades & Parcelas Chile',
+    'url': 'https://www.propiedadesyparcelas.cl/',
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': 'https://www.propiedadesyparcelas.cl/buscar?q={search_term_string}',
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
+  return [breadcrumb, realEstateListing, organization, website];
+}
+
 // 2. COMPONENTE VISUAL DE LA PÁGINA (DISEÑO PREMIUM)
 export default async function PropiedadPage({ params }: Props) {
-  const { slug } = await params;
+  const { operacion, comuna, slug } = await params;
   let db: any = null;
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
@@ -109,34 +221,15 @@ export default async function PropiedadPage({ params }: Props) {
   const propLabel = propiedad.tipo_propiedad === 'terreno' ? 'Terreno / Parcela' : propiedad.tipo_propiedad === 'casa' ? 'Casa' : 'Local Comercial';
 
   // 3. INYECCIÓN DEL SCHEMA INMOBILIARIO (JSON-LD ENRIQUECIDO)
+  const schemas = buildPropertySchemas(propiedad, operacion, comuna, slug, fotos);
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'RealEstateListing',
-    'name': propiedad.titulo,
-    'description': propiedad.descripcion,
-    'datePosted': propiedad.fecha_publicacion,
-    'priceCurrency': propiedad.precio_uf ? 'CLF' : 'CLP',
-    'price': propiedad.precio_uf || propiedad.precio_pesos,
-    'listings': {
-      '@type': 'SingleFamilyResidence',
-      'address': {
-        '@type': 'PostalAddress',
-        'addressLocality': propiedad.comuna,
-        'addressRegion': propiedad.region,
-        'addressCountry': 'CL'
-      },
-      'numberOfRooms': propiedad.habitaciones,
-      'numberOfBathroomsTotal': propiedad.banos,
-      'floorSize': {
-        '@type': 'QuantitativeValue',
-        'value': propiedad.superficie_total,
-        'unitCode': 'MTK'
-      }
-    }
+    '@graph': schemas
   };
 
   return (
     <div className="dark:bg-slate-900 bg-slate-50 min-h-screen dark:text-slate-100 text-slate-900 font-sans antialiased pb-20 transition-colors">
+      <VisitTracker propiedadId={propiedad.id} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
