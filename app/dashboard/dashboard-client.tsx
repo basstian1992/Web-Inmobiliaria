@@ -97,8 +97,10 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
 
   // Fotos y Videos
   const [fotosFiles, setFotosFiles] = useState<File[]>([]);
+  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
   const [videosUrls, setVideosUrls] = useState<string[]>([]);
   const [videoInputUrl, setVideoInputUrl] = useState('');
+  const [videoFiles, setVideoFiles] = useState<File[]>([]);
 
   // Compresión Client-Side WebP Canvas
   const compressImageToWebp = async (file: File): Promise<Blob> => {
@@ -110,7 +112,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 1920;
+          const maxDim = 1200;
 
           if (width > maxDim || height > maxDim) {
             if (width > height) {
@@ -136,7 +138,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
               else reject(new Error('Image conversion failed'));
             },
             'image/webp',
-            0.8
+            0.5
           );
         };
         img.onerror = () => reject(new Error('Failed to load image'));
@@ -144,6 +146,58 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
       };
       reader.onerror = () => reject(new Error('Failed to read file'));
       reader.readAsDataURL(file);
+    });
+  };
+
+  // Compresión de video client-side (canvas + MediaRecorder)
+  const compressVideo = async (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.preload = 'auto';
+      video.muted = true;
+      video.playsInline = true;
+      video.src = URL.createObjectURL(file);
+
+      video.onloadedmetadata = () => {
+        const maxWidth = 854;
+        const scale = Math.min(maxWidth / video.videoWidth, 1);
+        const outW = Math.round(video.videoWidth * scale) - (Math.round(video.videoWidth * scale) % 2);
+        const outH = Math.round(video.videoHeight * scale) - (Math.round(video.videoHeight * scale) % 2);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = outW;
+        canvas.height = outH;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas context not available')); return; }
+
+        const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+          ? 'video/webm;codecs=vp9'
+          : 'video/webm';
+        const stream = canvas.captureStream(24);
+        const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 500000 });
+        const chunks: Blob[] = [];
+        recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, { type: 'video/webm' });
+          URL.revokeObjectURL(video.src);
+          resolve(blob);
+        };
+        recorder.onerror = () => reject(new Error('Video compression failed'));
+
+        video.play().then(() => {
+          recorder.start(200);
+          const draw = () => {
+            if (!video.paused && !video.ended) {
+              ctx.drawImage(video, 0, 0, outW, outH);
+              requestAnimationFrame(draw);
+            } else {
+              recorder.stop();
+            }
+          };
+          draw();
+        }).catch(reject);
+      };
+      video.onerror = () => reject(new Error('Failed to load video'));
     });
   };
 
@@ -176,6 +230,22 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
 
   const removeVideoUrl = (index: number) => {
     setVideosUrls(videosUrls.filter((_, i) => i !== index));
+  };
+
+  const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selected = Array.from(e.target.files);
+      const totalAllowed = infoPlanActual.maxVideos;
+      if (videoFiles.length + videosUrls.length + selected.length > totalAllowed) {
+        alert(`Tu plan ${infoPlanActual.nombre} solo permite hasta ${totalAllowed} videos.`);
+        return;
+      }
+      setVideoFiles([...videoFiles, ...selected]);
+    }
+  };
+
+  const removeVideoFile = (index: number) => {
+    setVideoFiles(videoFiles.filter((_, i) => i !== index));
   };
 
   const handleDocumentoToggle = (doc: string) => {
@@ -259,39 +329,84 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
       const { propiedadId } = propiedadData;
 
       // 2. Comprimir y subir fotos con Canvas WebP Client-side
+      const failedUploads: string[] = [];
       for (let i = 0; i < fotosFiles.length; i++) {
         const file = fotosFiles[i];
-        const compressedBlob = await compressImageToWebp(file);
-        
-        // Creamos un FormData para subir
-        const uploadForm = new FormData();
-        uploadForm.append('file', compressedBlob, `foto-${i}.webp`);
-        uploadForm.append('propiedadId', propiedadId);
+        try {
+          const compressedBlob = await compressImageToWebp(file);
+          const uploadForm = new FormData();
+          uploadForm.append('file', compressedBlob, `foto-${i}.webp`);
+          uploadForm.append('propiedadId', propiedadId);
 
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          body: uploadForm,
-        });
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: uploadForm,
+          });
 
-        if (!uploadRes.ok) {
-          console.error(`Error al subir la imagen ${i + 1}`);
+          if (!uploadRes.ok) {
+            const errData = await uploadRes.json().catch(() => ({}));
+            failedUploads.push(`Imagen ${i + 1}: ${errData.error || 'Error del servidor'}`);
+          }
+        } catch (err: any) {
+          failedUploads.push(`Imagen ${i + 1}: ${err.message || 'Error de compresión'}`);
         }
       }
 
-      // 3. Registrar videos
-      for (const videoUrl of videosUrls) {
-        await fetch('/api/videos/crear', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            propiedadId,
-            urlExterno: videoUrl,
-            esPrincipal: 1,
-          }),
-        });
+      // 3. Subir y comprimir videos (archivos)
+      for (let i = 0; i < videoFiles.length; i++) {
+        const file = videoFiles[i];
+        try {
+          const compressedBlob = await compressVideo(file);
+          const uploadForm = new FormData();
+          uploadForm.append('file', compressedBlob, `video-${i}.webm`);
+          uploadForm.append('propiedadId', propiedadId);
+          uploadForm.append('esPrincipal', i === 0 ? '1' : '0');
+
+          const uploadRes = await fetch('/api/upload-video', {
+            method: 'POST',
+            body: uploadForm,
+          });
+
+          if (!uploadRes.ok) {
+            const errData = await uploadRes.json().catch(() => ({}));
+            failedUploads.push(`Video ${i + 1}: ${errData.error || 'Error del servidor'}`);
+          }
+        } catch (err: any) {
+          failedUploads.push(`Video ${i + 1}: ${err.message || 'Error de compresión'}`);
+        }
       }
 
-      setSuccessMessage('¡Felicidades! Tu anuncio ha sido publicado con éxito y ya está optimizado para SEO.');
+      // 4. Registrar videos externos (URLs)
+      for (const videoUrl of videosUrls) {
+        try {
+          const res = await fetch('/api/videos/crear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              propiedadId,
+              urlExterno: videoUrl,
+              esPrincipal: videoFiles.length === 0 ? 1 : 0,
+            }),
+          });
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            failedUploads.push(`Video URL: ${errData.error || 'Error del servidor'}`);
+          }
+        } catch (err: any) {
+          failedUploads.push(`Video URL: ${err.message || 'Error de red'}`);
+        }
+      }
+
+      // Guardar errores de upload para mostrarlos al usuario
+      if (failedUploads.length > 0) {
+        setUploadErrors(failedUploads);
+      }
+
+      if (failedUploads.length === 0) {
+        setSuccessMessage('¡Felicidades! Tu anuncio ha sido publicado con éxito y ya está optimizado para SEO.');
+      } else {
+        setSuccessMessage(`Anuncio publicado, pero ${failedUploads.length} archivo(s) no pudieron subirse. Revisa los errores abajo e intenta de nuevo.`);
+      }
       
       // Limpiar Formulario
       setTitulo('');
@@ -304,6 +419,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
       setDocumentos([]);
       setFotosFiles([]);
       setVideosUrls([]);
+      setVideoFiles([]);
 
       // Redirigir a pestaña de propiedades
       setTimeout(() => {
@@ -397,6 +513,22 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
           <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 p-4 rounded-2xl mb-8 animate-fadeIn">
             <strong className="font-bold block">¡Éxito!</strong>
             <span className="text-sm">{successMessage}</span>
+          </div>
+        )}
+        {uploadErrors.length > 0 && (
+          <div className="bg-amber-500/10 border border-amber-500/30 text-amber-200 p-4 rounded-2xl mb-8 animate-fadeIn">
+            <strong className="font-bold block">⚠️ Problemas al subir archivos:</strong>
+            <ul className="text-sm mt-2 list-disc list-inside space-y-1">
+              {uploadErrors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
+            <button 
+              onClick={() => setUploadErrors([])} 
+              className="text-amber-300 font-bold text-xs mt-2 underline"
+            >
+              Descartar avisos
+            </button>
           </div>
         )}
 
@@ -838,24 +970,60 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                 <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800/80 space-y-4">
                   <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-wider border-b border-slate-800 pb-2">🎥 Videos de la Propiedad</h3>
                   <p className="text-slate-400 text-xs">
-                    Tu plan permite registrar hasta <strong>{infoPlanActual.maxVideos === 999999 ? 'Ilimitados' : infoPlanActual.maxVideos} videos</strong>. Pegue enlaces de YouTube, Vimeo o links MP4 externos.
+                    Tu plan permite registrar hasta <strong>{infoPlanActual.maxVideos === 999999 ? 'Ilimitados' : infoPlanActual.maxVideos} videos</strong>. Puedes subir archivos de video (se comprimirán a 854px de ancho) o pegar enlaces de YouTube/Vimeo.
                   </p>
+
+                  {/* Subida de archivos de video */}
+                  <div className="space-y-2">
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-800 hover:border-indigo-500/50 rounded-2xl cursor-pointer bg-slate-950 transition-colors">
+                      <div className="flex flex-col items-center justify-center pt-4 pb-4">
+                        <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Subir archivo de video</span>
+                        <p className="text-slate-600 text-[10px] mt-1">MP4, WebM, MOV (se comprime automáticamente)</p>
+                      </div>
+                      <input 
+                        type="file" 
+                        accept="video/*" 
+                        onChange={handleVideoFileChange}
+                        className="hidden" 
+                        disabled={videoFiles.length + videosUrls.length >= infoPlanActual.maxVideos}
+                      />
+                    </label>
+                    {videoFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {videoFiles.map((file, idx) => (
+                          <div key={idx} className="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 text-xs">
+                            <span className="truncate max-w-md text-slate-300">{file.name}</span>
+                            <button 
+                              type="button" 
+                              onClick={() => removeVideoFile(idx)}
+                              className="text-red-400 hover:text-red-300 font-bold"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="Ej. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                      value={videoInputUrl}
-                      onChange={(e) => setVideoInputUrl(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 p-3 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs placeholder-slate-600"
-                    />
-                    <button 
-                      type="button"
-                      onClick={addVideoUrl}
-                      className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 rounded-xl transition-all"
-                    >
-                      Añadir
-                    </button>
+                  <div className="border-t border-slate-800 pt-4">
+                    <p className="text-slate-500 text-[10px] mb-2">O pega enlaces externos (YouTube, Vimeo):</p>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Ej. https://www.youtube.com/watch?v=..."
+                        value={videoInputUrl}
+                        onChange={(e) => setVideoInputUrl(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 p-3 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs placeholder-slate-600"
+                      />
+                      <button 
+                        type="button"
+                        onClick={addVideoUrl}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 rounded-xl transition-all"
+                      >
+                        Añadir
+                      </button>
+                    </div>
                   </div>
 
                   {videosUrls.length > 0 && (

@@ -4,16 +4,50 @@ import { currentUser } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
+async function getDB() {
+  try {
+    return getCloudflareContext().env.DB;
+  } catch (e) {
+    return (globalThis as any).DB || (process.env as any).DB || (process.env as any).propiedadesyparcelas_db;
+  }
+}
+
+const ADMIN_EMAILS = ['b.alarconatenas@gmail.com', 'basklian@gmail.com', 'b.alarcontenas@gmail.com'];
+
+async function syncUser(db: any, user: any) {
+  const isAdmin = user.emailAddresses.some((e: any) => ADMIN_EMAILS.includes(e.emailAddress));
+  const planEsperado = isAdmin ? 'admin' : 'gratis';
+  const dbUser = await db.prepare('SELECT plan_tipo FROM usuarios WHERE id = ?').bind(user.id).first();
+
+  if (!dbUser) {
+    const nombre = user.firstName || user.username || 'Usuario';
+    const email = user.emailAddresses[0]?.emailAddress || '';
+    await db.prepare(
+      'INSERT INTO usuarios (id, nombre, email, plan_tipo) VALUES (?, ?, ?, ?)'
+    ).bind(user.id, nombre, email, planEsperado).run();
+    return planEsperado;
+  }
+
+  if (isAdmin && dbUser.plan_tipo !== 'admin') {
+    await db.prepare("UPDATE usuarios SET plan_tipo = 'admin' WHERE id = ?").bind(user.id).run();
+    return 'admin';
+  }
+
+  return dbUser.plan_tipo;
+}
+
 export async function GET() {
   try {
-    let db: any = null;
-    try {
-      db = getCloudflareContext().env.DB;
-    } catch (e) {
-      db = (globalThis as any).DB || process.env.DB || (process.env as any).propiedadesyparcelas_db;
-    }
+    const user = await currentUser();
+    if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 });
 
+    let db = await getDB();
     if (!db) return NextResponse.json({ success: false, error: 'DB not connected' }, { status: 500 });
+
+    const plan = await syncUser(db, user);
+    if (plan !== 'admin') {
+      return NextResponse.json({ success: false, error: 'No tienes permisos de administrador.' }, { status: 403 });
+    }
 
     const keys = ['flow_plan_10k', 'flow_plan_20k', 'flow_plan_50k'];
     const placeholders = keys.map(() => '?').join(',');
@@ -40,20 +74,12 @@ export async function POST(req: Request) {
     const user = await currentUser();
     if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 });
 
-    // En un sistema real verificaríamos si user.publicMetadata.role === 'admin'
-    // Para este MVP, o verificamos que el usuario es admin en nuestra tabla `usuarios`
-    
-    let db: any = null;
-    try {
-      db = getCloudflareContext().env.DB;
-    } catch (e) {
-      db = (globalThis as any).DB || process.env.DB || (process.env as any).propiedadesyparcelas_db;
-    }
+    let db = await getDB();
     if (!db) return NextResponse.json({ success: false, error: 'DB not connected' }, { status: 500 });
 
-    const dbUser = await db.prepare('SELECT plan_tipo FROM usuarios WHERE id = ?').bind(user.id).first();
-    if (!dbUser || dbUser.plan_tipo !== 'admin') {
-       return NextResponse.json({ success: false, error: 'No tienes permisos de administrador.' }, { status: 403 });
+    const plan = await syncUser(db, user);
+    if (plan !== 'admin') {
+      return NextResponse.json({ success: false, error: 'No tienes permisos de administrador.' }, { status: 403 });
     }
 
     const body = await req.json();
