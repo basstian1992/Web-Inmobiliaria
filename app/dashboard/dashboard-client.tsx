@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { UserButton } from '@clerk/nextjs';
 
 interface Property {
@@ -149,56 +149,46 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
     });
   };
 
-  // Compresión de video client-side (canvas + MediaRecorder)
+  // Compresión de video con FFmpeg.wasm (con audio)
+  const ffmpegRef = useRef<any>(null);
+  const [ffmpegLoading, setFfmpegLoading] = useState(false);
+
+  const getFFmpeg = async () => {
+    if (ffmpegRef.current) return ffmpegRef.current;
+    setFfmpegLoading(true);
+    const { FFmpeg } = await import('@ffmpeg/ffmpeg');
+    const ffmpeg = new FFmpeg();
+    await ffmpeg.load();
+    ffmpegRef.current = ffmpeg;
+    setFfmpegLoading(false);
+    return ffmpeg;
+  };
+
   const compressVideo = async (file: File): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement('video');
-      video.preload = 'auto';
-      video.muted = true;
-      video.playsInline = true;
-      video.src = URL.createObjectURL(file);
+    const ffmpeg = await getFFmpeg();
+    const inputName = `input${file.name.substring(file.name.lastIndexOf('.')) || '.mp4'}`;
+    const outputName = 'output.mp4';
 
-      video.onloadedmetadata = () => {
-        const maxWidth = 854;
-        const scale = Math.min(maxWidth / video.videoWidth, 1);
-        const outW = Math.round(video.videoWidth * scale) - (Math.round(video.videoWidth * scale) % 2);
-        const outH = Math.round(video.videoHeight * scale) - (Math.round(video.videoHeight * scale) % 2);
+    const { fetchFile } = await import('@ffmpeg/util');
+    await ffmpeg.writeFile(inputName, await fetchFile(file));
 
-        const canvas = document.createElement('canvas');
-        canvas.width = outW;
-        canvas.height = outH;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) { reject(new Error('Canvas context not available')); return; }
+    await ffmpeg.exec([
+      '-i', inputName,
+      '-vf', 'scale=854:-2',
+      '-c:v', 'libx264',
+      '-crf', '30',
+      '-preset', 'fast',
+      '-c:a', 'aac',
+      '-b:a', '64k',
+      '-movflags', '+faststart',
+      outputName
+    ]);
 
-        const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-          ? 'video/webm;codecs=vp9'
-          : 'video/webm';
-        const stream = canvas.captureStream(24);
-        const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 500000 });
-        const chunks: Blob[] = [];
-        recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-        recorder.onstop = () => {
-          const blob = new Blob(chunks, { type: 'video/webm' });
-          URL.revokeObjectURL(video.src);
-          resolve(blob);
-        };
-        recorder.onerror = () => reject(new Error('Video compression failed'));
+    const data = await ffmpeg.readFile(outputName);
+    await ffmpeg.deleteFile(inputName);
+    await ffmpeg.deleteFile(outputName);
 
-        video.play().then(() => {
-          recorder.start(200);
-          const draw = () => {
-            if (!video.paused && !video.ended) {
-              ctx.drawImage(video, 0, 0, outW, outH);
-              requestAnimationFrame(draw);
-            } else {
-              recorder.stop();
-            }
-          };
-          draw();
-        }).catch(reject);
-      };
-      video.onerror = () => reject(new Error('Failed to load video'));
-    });
+    return new Blob([data], { type: 'video/mp4' });
   };
 
   const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,6 +236,75 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
 
   const removeVideoFile = (index: number) => {
     setVideoFiles(videoFiles.filter((_, i) => i !== index));
+  };
+
+  // Gestión de media (fotos/videos) de propiedades existentes
+  const [managingPropertyId, setManagingPropertyId] = useState<string | null>(null);
+  const [propertyPhotos, setPropertyPhotos] = useState<any[]>([]);
+  const [propertyVideos, setPropertyVideos] = useState<any[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [deletingMediaId, setDeletingMediaId] = useState<string | null>(null);
+
+  const openMediaManager = async (propiedadId: string) => {
+    setManagingPropertyId(propiedadId);
+    setMediaLoading(true);
+    try {
+      const res = await fetch(`/api/propiedades/${propiedadId}/media`);
+      if (res.ok) {
+        const data = await res.json();
+        setPropertyPhotos(data.fotos || []);
+        setPropertyVideos(data.videos || []);
+      }
+    } catch (e) {
+      console.error('Error al cargar media:', e);
+    }
+    setMediaLoading(false);
+  };
+
+  const closeMediaManager = () => {
+    setManagingPropertyId(null);
+    setPropertyPhotos([]);
+    setPropertyVideos([]);
+  };
+
+  const deletePhoto = async (fotoId: string) => {
+    setDeletingMediaId(fotoId);
+    try {
+      const res = await fetch(`/api/fotos/eliminar`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fotoId }),
+      });
+      if (res.ok) {
+        setPropertyPhotos(propertyPhotos.filter((p: any) => p.id !== fotoId));
+      } else {
+        const err = await res.json();
+        alert('Error al eliminar foto: ' + (err.error || 'Desconocido'));
+      }
+    } catch (e: any) {
+      alert('Error de red al eliminar foto: ' + e.message);
+    }
+    setDeletingMediaId(null);
+  };
+
+  const deleteVideo = async (videoId: string) => {
+    setDeletingMediaId(videoId);
+    try {
+      const res = await fetch(`/api/videos/eliminar`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoId }),
+      });
+      if (res.ok) {
+        setPropertyVideos(propertyVideos.filter((v: any) => v.id !== videoId));
+      } else {
+        const err = await res.json();
+        alert('Error al eliminar video: ' + (err.error || 'Desconocido'));
+      }
+    } catch (e: any) {
+      alert('Error de red al eliminar video: ' + e.message);
+    }
+    setDeletingMediaId(null);
   };
 
   const handleDocumentoToggle = (doc: string) => {
@@ -641,7 +700,13 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                           </div>
                         </div>
 
-                        <div className="p-6 bg-slate-950 border-t border-slate-850/60 flex items-center justify-between gap-3">
+                        <div className="p-6 bg-slate-950 border-t border-slate-850/60 flex items-center justify-between gap-2">
+                          <button
+                            onClick={() => openMediaManager(p.id)}
+                            className="text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] py-2.5 px-3 rounded-xl transition-all"
+                          >
+                            📷 Media
+                          </button>
                           <a
                             href={`/${p.tipo_operacion}/${p.comuna}/${p.id}`}
                             target="_blank"
@@ -649,16 +714,87 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                           >
                             Ver Ficha
                           </a>
-                          
                           {!impulsado && planActual === 'gratis' && (
                             <button
                               onClick={() => setActiveTab('suscripciones')}
-                              className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-extrabold text-xs py-2.5 rounded-xl transition-all shadow-md shadow-amber-500/5 flex items-center justify-center gap-1.5"
+                              className="text-center bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-extrabold text-[10px] py-2.5 px-3 rounded-xl transition-all shadow-md shadow-amber-500/5"
                             >
-                              <span>Impulsar Plan</span>
+                              👑 Impulsar
                             </button>
                           )}
                         </div>
+
+                        {/* Panel de gestión de media */}
+                        {managingPropertyId === p.id && (
+                          <div className="border-t border-slate-800/80 p-6 bg-slate-900/50">
+                            <div className="flex items-center justify-between mb-4">
+                              <h4 className="text-sm font-bold text-indigo-400">Gestionar Fotos y Videos</h4>
+                              <button
+                                onClick={closeMediaManager}
+                                className="text-slate-400 hover:text-white text-xs font-bold"
+                              >
+                                Cerrar ✕
+                              </button>
+                            </div>
+                            {mediaLoading ? (
+                              <p className="text-slate-400 text-xs">Cargando media...</p>
+                            ) : (
+                              <div className="space-y-4">
+                                {/* Fotos existentes */}
+                                {propertyPhotos.length > 0 && (
+                                  <div>
+                                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-2">Fotos ({propertyPhotos.length})</p>
+                                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                      {propertyPhotos.map((foto: any) => (
+                                        <div key={foto.id} className="relative group">
+                                          <img
+                                            src={foto.url_r2}
+                                            alt=""
+                                            className="w-full h-16 object-cover rounded-lg border border-slate-800"
+                                          />
+                                          <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                                            <button
+                                              onClick={() => deletePhoto(foto.id)}
+                                              disabled={deletingMediaId === foto.id}
+                                              className="bg-red-600 hover:bg-red-500 text-white text-[10px] px-2 py-1 rounded font-bold disabled:opacity-50"
+                                            >
+                                              {deletingMediaId === foto.id ? '...' : 'Eliminar'}
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {/* Videos existentes */}
+                                {propertyVideos.length > 0 && (
+                                  <div>
+                                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-2">Videos ({propertyVideos.length})</p>
+                                    <div className="space-y-2">
+                                      {propertyVideos.map((video: any) => (
+                                        <div key={video.id} className="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-slate-800">
+                                          <span className="text-xs text-slate-300 truncate max-w-xs">
+                                            {video.url_externo || video.url_r2 || 'Video'}
+                                          </span>
+                                          <button
+                                            onClick={() => deleteVideo(video.id)}
+                                            disabled={deletingMediaId === video.id}
+                                            className="bg-red-600 hover:bg-red-500 text-white text-[10px] px-2 py-1 rounded font-bold disabled:opacity-50 shrink-0"
+                                          >
+                                            {deletingMediaId === video.id ? '...' : 'Eliminar'}
+                                          </button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {propertyPhotos.length === 0 && propertyVideos.length === 0 && (
+                                  <p className="text-slate-500 text-xs">Esta propiedad no tiene fotos ni videos aún.</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -1052,7 +1188,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                   disabled={isSubmitting}
                   className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 disabled:opacity-50 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-indigo-600/10 text-sm uppercase tracking-wider cursor-pointer"
                 >
-                  {isSubmitting ? 'Comprimiendo fotos y subiendo aviso...' : '🚀 Publicar Aviso Optimizado para SEO'}
+                  {isSubmitting ? (ffmpegLoading ? 'Cargando compresor de video...' : 'Comprimiendo y subiendo archivos...') : '🚀 Publicar Aviso Optimizado para SEO'}
                 </button>
               </div>
 

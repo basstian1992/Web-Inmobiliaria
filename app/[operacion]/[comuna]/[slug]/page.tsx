@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import GalleryLightbox from '@/components/GalleryLightbox';
 
 interface Props {
   params: Promise<{
@@ -183,22 +184,14 @@ export default async function PropiedadPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Galería de Fotos - Grid Premium */}
+        {/* Galería de Fotos - Grid Premium con Lightbox */}
         {fotos && fotos.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fotos.map((foto: any, index: number) => (
-              <div 
-                key={index} 
-                className="overflow-hidden rounded-3xl border dark:border-slate-800 border-slate-200 dark:bg-slate-950 bg-slate-100 hover:border-indigo-500/50 transition-all duration-300 shadow-lg relative h-72"
-              >
-                <img 
-                  src={foto.url_r2} 
-                  alt={`${propiedad.titulo} - Imagen ${index + 1}`} 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-            ))}
-          </div>
+          <GalleryLightbox 
+            images={fotos.map((foto: any, index: number) => ({
+              url_r2: foto.url_r2,
+              alt: `${propiedad.titulo} - Imagen ${index + 1}`
+            }))} 
+          />
         ) : (
           <div className="dark:bg-slate-950 bg-white border dark:border-slate-800 border-slate-200 rounded-3xl p-12 text-center dark:text-slate-500 text-slate-400 text-sm font-medium shadow-sm transition-colors">
             No se han cargado imágenes para esta propiedad.
