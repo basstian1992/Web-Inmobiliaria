@@ -21,13 +21,10 @@ export async function GET() {
       throw new Error('Base de datos D1 no vinculada');
     }
 
-    // 1. Consultamos las propiedades directo a la base de datos Cloudflare D1
-    // Ordenamos por prioridad para asegurar que las pagadas destaquen ante los rastreadores
-    const { results } = await db.prepare(
-      `SELECT slug, comuna, tipo_operacion FROM propiedades ORDER BY prioridad_score DESC`
-    ).all();
+    // 1. Landing pages estáticas por operación
+    const operaciones = ['venta', 'arriendo', 'compra'];
+    const tipos = ['terrenos', 'casas', 'locales-comerciales'];
 
-    // 2. Estructuramos el encabezado del archivo XML que lee Google
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
@@ -35,9 +32,37 @@ export async function GET() {
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
       </url>
-    `;
+      <url>
+        <loc>${baseUrl}/buscar</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+      </url>`;
 
-    // 3. Inyectamos dinámicamente cada propiedad publicada en Chile
+    // Landing pages por operación (ej: /venta, /arriendo)
+    for (const op of operaciones) {
+      sitemap += `
+      <url>
+        <loc>${baseUrl}/${op}</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+      </url>`;
+      // Landing pages por tipo (ej: /venta/casas, /arriendo/terrenos)
+      for (const t of tipos) {
+        sitemap += `
+      <url>
+        <loc>${baseUrl}/${op}/${t}</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+      </url>`;
+      }
+    }
+
+    // 2. Consultamos las propiedades
+    const { results } = await db.prepare(
+      `SELECT slug, comuna, tipo_operacion FROM propiedades ORDER BY prioridad_score DESC`
+    ).all();
+
+    // 3. Inyectamos dinámicamente cada propiedad publicada
     results.forEach((propiedad: any) => {
       sitemap += `
       <url>

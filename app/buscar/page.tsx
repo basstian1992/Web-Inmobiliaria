@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import PropertyCard from '@/components/PropertyCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,101 +104,9 @@ export default async function BuscarPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {resultados.map((item: any) => {
-              const esVIP = item.prioridad_score === 2;
-              const propLabel = item.tipo_propiedad === 'terreno' ? 'Terreno / Parcela' : item.tipo_propiedad === 'casa' ? 'Casa' : 'Local Comercial';
-              
-              return (
-                <article 
-                  key={item.id} 
-                  className={`dark:bg-slate-950 bg-white rounded-3xl overflow-hidden border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col justify-between ${
-                    esVIP ? 'border-indigo-500/40 shadow-xl' : 'dark:border-slate-850 border-slate-200'
-                  }`}
-                >
-                  <div>
-                    {/* Contenedor de Imagen de Portada */}
-                    <div className="relative h-60 dark:bg-slate-900 bg-slate-100 border-b dark:border-slate-850 border-slate-200">
-                      <div className="absolute top-4 left-4 z-10 flex gap-1.5">
-                        <span className="text-[9px] font-bold uppercase tracking-wider bg-indigo-500 text-slate-950 px-2.5 py-1 rounded-lg shadow-md">
-                          {item.tipo_operacion === 'venta' ? 'Venta' : item.tipo_operacion === 'compra' ? 'Compra' : 'Arriendo'}
-                        </span>
-                        {esVIP && (
-                          <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1">
-                            ⭐ VIP Destacado
-                          </span>
-                        )}
-                      </div>
-
-                      {item.foto_principal ? (
-                        <img 
-                          src={item.foto_principal} 
-                          alt={item.titulo} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-indigo-950 to-slate-950 flex flex-col items-center justify-center text-slate-500 text-xs">
-                          <span>📷 Foto no disponible</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Información de la Tarjeta */}
-                    <div className="p-6 space-y-4">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase tracking-widest dark:text-indigo-400 text-indigo-600">
-                          {propLabel}
-                        </span>
-                        <h3 className="text-lg font-black dark:text-white text-slate-900 leading-snug line-clamp-2">
-                          {item.titulo}
-                        </h3>
-                        <p className="dark:text-slate-400 text-slate-500 text-xs line-clamp-1">📍 {item.comuna}, {item.region}</p>
-                      </div>
-
-                      {/* Características / Ficha Rápida */}
-                      <div className="grid grid-cols-2 gap-2 text-xs font-medium dark:text-slate-300 text-slate-700 bg-slate-500/5 dark:bg-transparent dark:border dark:border-slate-800 p-3 rounded-xl">
-                        <div className="flex items-center gap-1.5">
-                          <span>📐</span> <span>{item.superficie_total} m²</span>
-                        </div>
-                        {item.tipo_propiedad !== 'terreno' && (
-                          <>
-                            <div className="flex items-center gap-1.5">
-                              <span>🛏️</span> <span>{item.habitaciones}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span>🚿</span> <span>{item.banos}</span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Footer de Tarjeta (Precio y Acción) */}
-                  <div className="p-6 pt-0 flex items-end justify-between gap-4">
-                    <div className="space-y-0.5">
-                      <span className="text-[10px] uppercase font-bold dark:text-slate-500 text-slate-400">Valor</span>
-                      <p className="text-xl font-black dark:text-white text-slate-900">
-                        {item.precio_uf 
-                          ? `${item.precio_uf} UF` 
-                          : item.precio_pesos 
-                            ? `$${item.precio_pesos.toLocaleString('es-CL')} CLP` 
-                            : 'Consultar'}
-                      </p>
-                    </div>
-                    <Link 
-                      href={`/${item.tipo_operacion}/${item.comuna.toLowerCase()}/${item.slug}`} 
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center shrink-0 ${
-                        esVIP 
-                        ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/20' 
-                        : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/20'
-                      }`}
-                    >
-                      Ver Detalles
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
+            {resultados.map((item: any) => (
+              <PropertyCard key={item.id} item={item} />
+            ))}
           </div>
         )}
       </main>

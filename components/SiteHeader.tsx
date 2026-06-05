@@ -34,8 +34,14 @@ export default function SiteHeader({ userId }: { userId?: string | null }) {
 
         {/* Navegación y Botones de Acceso */}
         <div className="flex items-center gap-3 sm:gap-6">
+          <Link href="/venta" className="text-xs sm:text-sm font-bold dark:text-indigo-400 text-indigo-600 dark:hover:text-white hover:text-indigo-800 transition-colors">
+            En Venta
+          </Link>
+          <Link href="/arriendo" className="text-xs sm:text-sm font-bold dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-indigo-600 transition-colors hidden sm:block">
+            En Arriendo
+          </Link>
           <Link href="/consejos" className="text-xs sm:text-sm font-bold dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-indigo-600 transition-colors hidden md:block">
-            Consejos Inmobiliarios
+            Consejos
           </Link>
           <ThemeToggle />
           
