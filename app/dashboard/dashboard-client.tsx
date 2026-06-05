@@ -73,6 +73,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
   // Estado del Formulario
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [generandoIA, setGenerandoIA] = useState(false);
   const [tipoOperacion, setTipoOperacion] = useState('venta'); // 'venta', 'compra', 'arriendo'
   const [tipoPropiedad, setTipoPropiedad] = useState('terreno'); // 'terreno', 'casa', 'local'
   const [precioPesos, setPrecioPesos] = useState('');
@@ -383,6 +384,44 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
 
   const [cuponCode, setCuponCode] = useState('');
   const [cuponMsg, setCuponMsg] = useState('');
+
+  // Generar descripción con IA
+  const generarDescripcionIA = async () => {
+    if (!titulo || !tipoOperacion || !tipoPropiedad || !comuna || !region || !superficieTotal) {
+      setErrorMessage('Completa al menos: título, tipo, operación, comuna, región y superficie antes de generar.');
+      return;
+    }
+    setGenerandoIA(true);
+    setErrorMessage(null);
+    try {
+      const res = await fetch('/api/ia/descripcion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tipo_propiedad: tipoPropiedad,
+          tipo_operacion: tipoOperacion,
+          titulo,
+          comuna,
+          region,
+          superficie_total: superficieTotal,
+          habitaciones: parseInt(habitaciones) || 0,
+          banos: parseInt(banos) || 0,
+          precio_pesos: precioPesos || '0',
+          precio_uf: precioUf || '0',
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.descripcion) {
+        setDescripcion(data.descripcion);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      } else {
+        setErrorMessage(data.error || 'Error generando descripción');
+      }
+    } catch {
+      setErrorMessage('Error de red al generar descripción');
+    }
+    setGenerandoIA(false);
+  };
 
   // Compra de plan a través de Flow
   const iniciarCompraSuscripcion = async (plan: string) => {
@@ -1005,7 +1044,17 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Descripción Detallada (Incluye accesos, agua, luz)</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Descripción Detallada (Incluye accesos, agua, luz)</label>
+                    <button
+                      type="button"
+                      onClick={generarDescripcionIA}
+                      disabled={generandoIA}
+                      className="text-[10px] font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1"
+                    >
+                      {generandoIA ? '✨ Generando...' : '✨ Generar con IA'}
+                    </button>
+                  </div>
                   <textarea 
                     rows={6}
                     placeholder="Describe en detalle tu propiedad..." 

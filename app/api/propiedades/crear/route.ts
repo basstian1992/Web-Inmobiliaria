@@ -159,6 +159,18 @@ export async function POST(request: NextRequest) {
       documentosJson
     ).run();
 
+    // Indexar en FTS5 para búsqueda de texto completo
+    try {
+      await db.prepare(
+        `CREATE VIRTUAL TABLE IF NOT EXISTS propiedades_fts USING fts5(titulo, descripcion, comuna, region, propiedades_id UNINDEXED, tokenize='porter unicode61')`
+      ).run();
+      await db.prepare(
+        `INSERT INTO propiedades_fts (titulo, descripcion, comuna, region, propiedades_id) VALUES (?, ?, ?, ?, ?)`
+      ).bind(titulo, descripcion, comuna, region, propiedadId).run();
+    } catch (e) {
+      console.error('Error indexando en FTS5:', e);
+    }
+
     console.log(`Propiedad creada exitosamente con ID: ${propiedadId}`);
     return NextResponse.json({ success: true, propiedadId, slug: finalSlug });
   } catch (error: any) {

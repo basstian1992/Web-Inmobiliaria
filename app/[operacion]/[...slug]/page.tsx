@@ -4,6 +4,7 @@ import Link from 'next/link';
 import PropertyCard from '@/components/PropertyCard';
 import GalleryLightbox from '@/components/GalleryLightbox';
 import VisitTracker from '@/components/VisitTracker';
+import PropertyMap from '@/components/PropertyMap';
 
 export const dynamic = 'force-dynamic';
 
@@ -348,6 +349,9 @@ export default async function CatchAllPage({ params }: Props) {
                   })}
                 </div>
               )}
+
+              {/* Mapa interactivo */}
+              <PropertyMap comuna={propiedad.comuna} region={propiedad.region} titulo={propiedad.titulo} />
             </div>
 
             <div className="lg:col-span-1 space-y-6">

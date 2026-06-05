@@ -150,6 +150,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       ).bind(...values).run();
     }
 
+    // Sincronizar FTS
+    try {
+      const updated = await db.prepare(`SELECT titulo, descripcion, comuna, region FROM propiedades WHERE id = ?`).bind(id).first();
+      if (updated) {
+        await db.prepare(`CREATE VIRTUAL TABLE IF NOT EXISTS propiedades_fts USING fts5(titulo, descripcion, comuna, region, propiedades_id UNINDEXED, tokenize='porter unicode61')`).run();
+        await db.prepare(`DELETE FROM propiedades_fts WHERE propiedades_id = ?`).bind(id).run();
+        await db.prepare(`INSERT INTO propiedades_fts (titulo, descripcion, comuna, region, propiedades_id) VALUES (?, ?, ?, ?, ?)`).bind(updated.titulo, updated.descripcion, updated.comuna, updated.region, id).run();
+      }
+    } catch (e) {
+      console.error('Error sincronizando FTS:', e);
+    }
+
     return NextResponse.json({ success: true, slug: finalSlug });
   } catch (error: any) {
     console.error('Error al actualizar propiedad:', error);
