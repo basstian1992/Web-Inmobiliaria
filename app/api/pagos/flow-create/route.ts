@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { plan } = body; // 'plan_10k', 'plan_20k', 'plan_50k'
+    const { plan, cupon } = body; // 'plan_10k', 'plan_20k', 'plan_50k' + optional coupon code
 
     if (!plan || !['plan_10k', 'plan_20k', 'plan_50k'].includes(plan)) {
       return NextResponse.json({ error: 'Plan seleccionado inválido' }, { status: 400 });
@@ -41,6 +41,26 @@ export async function POST(request: NextRequest) {
     } else if (plan === 'plan_50k') {
       monto = 50000;
       subject = 'Suscripción Portal Inmobiliario - Plan 50K (Exposición Máxima)';
+    }
+
+    // Validar cupón de descuento si se envió
+    let descuentoAplicado = 0;
+    let cuponInfo: any = null;
+    const dbForCoupon = db; // same db reference
+
+    if (cupon && dbForCoupon) {
+      cuponInfo = await dbForCoupon.prepare(
+        `SELECT * FROM cupones WHERE codigo = ? AND activo = 1 AND usos_actuales < usos_maximos AND (fecha_expiracion IS NULL OR fecha_expiracion > DATETIME('now'))`
+      ).bind(cupon.toUpperCase()).first();
+
+      if (!cuponInfo) {
+        return NextResponse.json({ error: 'Cupón inválido, expirado o sin usos disponibles' }, { status: 400 });
+      }
+
+      descuentoAplicado = cuponInfo.descuento;
+      const descuentoMonto = Math.round(monto * descuentoAplicado / 100);
+      monto = monto - descuentoMonto;
+      subject = `${subject} (CUPÓN: ${cupon.toUpperCase()} - ${descuentoAplicado}% DCTO)`;
     }
 
     // Obtener variables de entorno de Cloudflare y BD
@@ -84,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     const baseUrl = 'https://www.propiedadesyparcelas.cl';
     const email = user.emailAddresses[0]?.emailAddress || '';
-    const commerceOrder = `${user.id}:${plan}:${Date.now()}`;
+    const commerceOrder = cuponInfo ? `${user.id}:${plan}:${Date.now()}:${cuponInfo.codigo}` : `${user.id}:${plan}:${Date.now()}`;
 
     // Parámetros requeridos por Flow para la creación de pagos
     const flowParams: Record<string, any> = {

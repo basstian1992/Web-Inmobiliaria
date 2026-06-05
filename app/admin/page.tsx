@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 
-type Tab = 'config' | 'usuarios' | 'propiedades';
+type Tab = 'config' | 'usuarios' | 'propiedades' | 'cupones';
 
 const PLANES = ['gratis', 'plan_10k', 'plan_20k', 'plan_50k', 'admin'];
 
@@ -133,6 +133,7 @@ export default function AdminPage() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'config', label: 'Config Flow' },
+    { key: 'cupones', label: 'Cupones' },
     { key: 'usuarios', label: 'Usuarios' },
     { key: 'propiedades', label: 'Propiedades' },
   ];
@@ -218,6 +219,9 @@ export default function AdminPage() {
             </form>
           </div>
         )}
+
+        {/* Tab: Cupones */}
+        {tab === 'cupones' && <CuponesTab />}
 
         {/* Tab: Usuarios */}
         {tab === 'usuarios' && (
@@ -345,7 +349,157 @@ export default function AdminPage() {
             )}
           </div>
         )}
+
+        {/* Tab: Cupones */}
+        {tab === 'cupones' && (
+          <div className="bg-slate-950 border border-slate-800 p-8 rounded-3xl shadow-2xl space-y-8">
+            <h2 className="text-xl font-bold text-indigo-400">Cupones de Descuento</h2>
+            <CuponesManager />
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+function CuponesManager() {
+  const [cupones, setCupones] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [codigo, setCodigo] = useState('');
+  const [descuento, setDescuento] = useState('50');
+  const [planTipo, setPlanTipo] = useState('plan_10k');
+  const [usosMaximos, setUsosMaximos] = useState('1');
+  const [fechaExpiracion, setFechaExpiracion] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  const load = async () => {
+    try {
+      const res = await fetch('/api/admin/cupones');
+      const d = await res.json();
+      if (d.success) setCupones(d.cupones);
+    } catch {}
+    setLoading(false);
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreating(true);
+    setMsg('');
+    try {
+      const res = await fetch('/api/admin/cupones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo, descuento, plan_tipo: planTipo, usos_maximos: usosMaximos, fecha_expiracion: fechaExpiracion || null }),
+      });
+      const d = await res.json();
+      if (d.success) {
+        setMsg(`Cupón ${d.codigo} creado con éxito!`);
+        setCodigo('');
+        load();
+      } else {
+        setMsg('Error: ' + d.error);
+      }
+    } catch { setMsg('Error de red'); }
+    setCreating(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Eliminar este cupón?')) return;
+    try {
+      await fetch(`/api/admin/cupones?id=${id}`, { method: 'DELETE' });
+      load();
+    } catch {}
+  };
+
+  const precios: Record<string, number> = { plan_10k: 10000, plan_20k: 20000, plan_50k: 50000 };
+
+  useEffect(() => { load(); }, []);
+
+  const planLabel: Record<string, string> = { plan_10k: 'Plan 10K', plan_20k: 'Plan 20K', plan_50k: 'Plan 50K' };
+
+  return (
+    <div className="space-y-8">
+      {/* Formulario crear cupón */}
+      <form onSubmit={handleCreate} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+        <h3 className="text-sm font-bold text-white uppercase tracking-wider">Crear Nuevo Cupón</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-400 mb-1">Código</label>
+            <input value={codigo} onChange={e => setCodigo(e.target.value.toUpperCase())} placeholder="EJ: VERANO50" className="w-full bg-slate-950 border border-slate-700 text-white p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none uppercase" required />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-400 mb-1">Descuento %</label>
+            <input type="number" value={descuento} onChange={e => setDescuento(e.target.value)} min="1" max="100" className="w-full bg-slate-950 border border-slate-700 text-white p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-400 mb-1">Plan</label>
+            <select value={planTipo} onChange={e => setPlanTipo(e.target.value)} className="w-full bg-slate-950 border border-slate-700 text-white p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="plan_10k">Plan 10K</option>
+              <option value="plan_20k">Plan 20K</option>
+              <option value="plan_50k">Plan 50K</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-400 mb-1">Usos máximos</label>
+            <input type="number" value={usosMaximos} onChange={e => setUsosMaximos(e.target.value)} min="1" className="w-full bg-slate-950 border border-slate-700 text-white p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-400 mb-1">Expira (opcional)</label>
+            <input type="date" value={fechaExpiracion} onChange={e => setFechaExpiracion(e.target.value)} className="w-full bg-slate-950 border border-slate-700 text-white p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <div className="flex items-end">
+            <button type="submit" disabled={creating} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all text-sm disabled:opacity-50">
+              {creating ? 'Creando...' : 'Crear Cupón'}
+            </button>
+          </div>
+        </div>
+        {msg && <div className="bg-indigo-900/40 border border-indigo-500/50 text-indigo-200 p-3 rounded-xl text-sm font-bold text-center">{msg}</div>}
+      </form>
+
+      {/* Lista de cupones */}
+      {loading ? (
+        <div className="text-center text-slate-400 py-8">Cargando cupones...</div>
+      ) : cupones.length === 0 ? (
+        <div className="text-center text-slate-500 py-8">No hay cupones creados.</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-800 text-slate-400 text-left">
+                <th className="pb-3 pr-4 font-bold">Código</th>
+                <th className="pb-3 pr-4 font-bold">Dto</th>
+                <th className="pb-3 pr-4 font-bold">Plan</th>
+                <th className="pb-3 pr-4 font-bold">Precio Original</th>
+                <th className="pb-3 pr-4 font-bold">Precio Final</th>
+                <th className="pb-3 pr-4 font-bold">Usos</th>
+                <th className="pb-3 pr-4 font-bold">Expira</th>
+                <th className="pb-3 font-bold">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cupones.map(c => {
+                const original = precios[c.plan_tipo] || 0;
+                const final = Math.round(original * (100 - c.descuento) / 100);
+                return (
+                  <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-900/50">
+                    <td className="py-3 pr-4 text-white font-bold">{c.codigo}</td>
+                    <td className="py-3 pr-4 text-emerald-400 font-bold">-{c.descuento}%</td>
+                    <td className="py-3 pr-4 text-slate-300">{planLabel[c.plan_tipo] || c.plan_tipo}</td>
+                    <td className="py-3 pr-4 text-slate-400">${original.toLocaleString('es-CL')}</td>
+                    <td className="py-3 pr-4 text-white font-bold">${final.toLocaleString('es-CL')}</td>
+                    <td className="py-3 pr-4 text-slate-300">{c.usos_actuales}/{c.usos_maximos}</td>
+                    <td className="py-3 pr-4 text-slate-400 text-xs">{c.fecha_expiracion ? new Date(c.fecha_expiracion + 'T00:00:00').toLocaleDateString('es-CL') : '-'}</td>
+                    <td className="py-3">
+                      <button onClick={() => handleDelete(c.id)} className="text-red-400 hover:text-red-300 text-xs font-bold">Eliminar</button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

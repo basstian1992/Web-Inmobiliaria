@@ -381,16 +381,23 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
     }
   };
 
+  const [cuponCode, setCuponCode] = useState('');
+  const [cuponMsg, setCuponMsg] = useState('');
+
   // Compra de plan a través de Flow
   const iniciarCompraSuscripcion = async (plan: string) => {
     try {
       setLoadingId(plan);
       setErrorMessage(null);
+      setCuponMsg('');
+
+      const body: any = { plan };
+      if (cuponCode.trim()) body.cupon = cuponCode.trim();
 
       const response = await fetch('/api/pagos/flow-create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
@@ -1349,6 +1356,27 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                 <p className="text-slate-400 text-sm mt-2">
                   Actualiza tu plan con Flow vinculando cualquier tarjeta de débito o crédito en Chile. Activación y ampliación de límites al instante.
                 </p>
+              </div>
+
+              {/* Cupón de descuento */}
+              <div className="max-w-md mx-auto mb-10">
+                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={cuponCode}
+                    onChange={e => setCuponCode(e.target.value.toUpperCase())}
+                    placeholder="CÓDIGO CUPÓN"
+                    className="flex-1 bg-slate-900 border border-slate-700 text-white p-3 rounded-xl text-sm font-bold uppercase tracking-wider focus:ring-2 focus:ring-indigo-500 outline-none placeholder:text-slate-600"
+                  />
+                  <button
+                    onClick={() => { setCuponCode(''); setCuponMsg(''); }}
+                    className="text-slate-500 hover:text-white text-xs font-bold px-2"
+                  >
+                    ✕
+                  </button>
+                </div>
+                {cuponMsg && <p className="text-xs text-emerald-400 mt-2 text-center">{cuponMsg}</p>}
+                <p className="text-[10px] text-slate-600 text-center mt-2">¿Tienes un cupón de descuento? Ingresa el código arriba y luego selecciona tu plan.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -103,13 +103,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: `Estado actual: ${paymentData.status}` });
     }
 
-    const commerceOrder = paymentData.commerceOrder; // Formato: "userId:plan:timestamp"
+    const commerceOrder = paymentData.commerceOrder; // Formato: "userId:plan:timestamp" o "userId:plan:timestamp:CODIGO_CUPON"
     if (!commerceOrder || !commerceOrder.includes(':')) {
       console.error('Webhook de Flow: commerceOrder inválido o inexistente:', commerceOrder);
       return NextResponse.json({ error: 'Order de comercio inválida' }, { status: 400 });
     }
 
-    const [userId, plan, timestamp] = commerceOrder.split(':');
+    const parts = commerceOrder.split(':');
+    const userId = parts[0];
+    const plan = parts[1];
+    const cuponCodigo = parts.length >= 4 ? parts[3] : null;
     if (!userId || !plan) {
       console.error('Webhook de Flow: userId o plan faltantes en commerceOrder:', commerceOrder);
       return NextResponse.json({ error: 'Datos de orden incompletos' }, { status: 400 });
@@ -142,7 +145,14 @@ export async function POST(request: NextRequest) {
        WHERE usuario_id = ?`
     ).bind(prioridadScore, userId).run();
 
-    // Responder con redirección o éxito según requiera Flow
+    // Si se usó un cupón, incrementar su contador de usos
+    if (cuponCodigo) {
+      await db.prepare(
+        `UPDATE cupones SET usos_actuales = usos_actuales + 1 WHERE codigo = ?`
+      ).bind(cuponCodigo).run();
+      console.log(`Webhook de Flow: Cupón ${cuponCodigo} usado por usuario ${userId}`);
+    }
+
     // Flow espera un HTTP 200 con cuerpo o redirección si es necesario, pero para webhook (urlConfirmation) solo requiere HTTP 200 OK.
     return NextResponse.json({ success: true, message: 'Plan actualizado con éxito' });
   } catch (error: any) {

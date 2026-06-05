@@ -66,3 +66,16 @@ CREATE TABLE IF NOT EXISTS visitas (
     UNIQUE(propiedad_id, fecha)
 );
 
+CREATE TABLE IF NOT EXISTS cupones (
+    id TEXT PRIMARY KEY,
+    codigo TEXT UNIQUE NOT NULL,
+    descuento INTEGER NOT NULL DEFAULT 50,
+    plan_tipo TEXT NOT NULL,
+    usos_maximos INTEGER DEFAULT 1,
+    usos_actuales INTEGER DEFAULT 0,
+    activo INTEGER DEFAULT 1,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_expiracion DATETIME,
+    creado_por TEXT NOT NULL
+);
+
