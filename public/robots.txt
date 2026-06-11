@@ -1,4 +1,28 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+Disallow: /sign-in
+Disallow: /sign-up
+
+# SEO: Allow Googlebot to crawl everything important
+User-agent: Googlebot
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+Disallow: /sign-in
+Disallow: /sign-up
+
+User-agent: Googlebot-Image
+Allow: /fotos/
+
+User-agent: Googlebot-Video
+Allow: /
+
+# Crawl delay for non-essential bots
+User-agent: *
+Crawl-Delay: 10
 
 Sitemap: https://www.propiedadesyparcelas.cl/sitemap.xml

@@ -17,9 +17,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Propiedades, Locales Comerciales, Compra-Venta en Chile",
-  description: "Encuentra casas, parcelas, locales comerciales y propiedades en todo Chile con el mejor portal inmobiliario.",
-  keywords: "parcela, propiedades, corretaje, venta, compra, casa, compra de casa, compra de terreno, terreno en venta, venta de casa, venta de propiedad, local comercial, arriendo de local comercial, compra de local comercial, derecho a llave, compraventa, propiedades, terrenos en chile",
+  title: {
+    default: "Propiedades & Parcelas Chile | Compra, Venta y Arriendo de Terrenos, Casas y Locales Comerciales",
+    template: "%s | Propiedades & Parcelas Chile",
+  },
+  description: "Encuentra las mejores propiedades en Chile: terrenos, parcelas, casas y locales comerciales en venta y arriendo. Portal inmobiliario con SEO optimizado, fotos reales y contacto directo con vendedores. El sitio #1 en compraventa de propiedades en Chile.",
+  keywords: "parcela, propiedades, corretaje, venta, compra, casa, compra de casa, compra de terreno, terreno en venta, venta de casa, venta de propiedad, local comercial, arriendo de local comercial, compra de local comercial, derecho a llave, compraventa, propiedades, terrenos en chile, inversion inmobiliaria, propiedades chile, portal inmobiliario, propiedadesyparcelas.cl, terreno agricola, parcela de agrado, subdivisión predial, loteo, sitio eriazo",
   robots: {
     index: true,
     follow: true,
@@ -31,6 +34,21 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  openGraph: {
+    type: 'website',
+    locale: 'es_CL',
+    siteName: 'Propiedades & Parcelas Chile',
+    url: 'https://www.propiedadesyparcelas.cl/',
+    images: [{ url: 'https://www.propiedadesyparcelas.cl/logo-nuevo.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@propiedadescl',
+  },
+  verification: {
+    google: 'google-site-verification',
+  },
+  category: 'Real Estate',
 };
 
 export default async function RootLayout({
@@ -48,7 +66,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col bg-background text-foreground">
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light">
             <SiteHeader userId={userId} />
             {children}
           </ThemeProvider>

@@ -57,12 +57,13 @@ function getEmbedUrl(url: string) {
 
 function buildPropertySchemas(propiedad: any, operacion: string, comuna: string, slug: string, fotos: any[]) {
   const breadcrumbLabel = propiedad.tipo_operacion === 'venta' ? 'Venta' : propiedad.tipo_operacion === 'compra' ? 'Compra' : 'Arriendo';
+  const propertyUrl = `https://www.propiedadesyparcelas.cl/${operacion}/${comuna}/${slug}`;
   const breadcrumb = {
     '@type': 'BreadcrumbList',
     'itemListElement': [
       { '@type': 'ListItem', 'position': 1, 'name': 'Inicio', 'item': 'https://www.propiedadesyparcelas.cl/' },
       { '@type': 'ListItem', 'position': 2, 'name': breadcrumbLabel, 'item': `https://www.propiedadesyparcelas.cl/buscar?operacion=${propiedad.tipo_operacion}` },
-      { '@type': 'ListItem', 'position': 3, 'name': propiedad.comuna, 'item': `https://www.propiedadesyparcelas.cl/buscar?comuna=${propiedad.comuna}` },
+      { '@type': 'ListItem', 'position': 3, 'name': propiedad.comuna, 'item': `https://www.propiedadesyparcelas.cl/buscar?comuna=${encodeURIComponent(propiedad.comuna)}` },
       { '@type': 'ListItem', 'position': 4, 'name': propiedad.titulo }
     ]
   };
@@ -70,7 +71,11 @@ function buildPropertySchemas(propiedad: any, operacion: string, comuna: string,
   const listingType = isTerreno ? 'Land' : 'SingleFamilyResidence';
   const listing: any = {
     '@type': listingType,
-    'address': { '@type': 'PostalAddress', 'addressLocality': propiedad.comuna, 'addressRegion': propiedad.region, 'addressCountry': 'CL' }
+    '@id': propertyUrl,
+    'name': propiedad.titulo,
+    'description': propiedad.descripcion?.substring(0, 200),
+    'address': { '@type': 'PostalAddress', 'addressLocality': propiedad.comuna, 'addressRegion': propiedad.region, 'addressCountry': 'CL' },
+    'image': fotos?.length > 0 ? fotos.map(f => f.url_r2) : undefined,
   };
   if (isTerreno) {
     listing.landArea = { '@type': 'QuantitativeValue', 'value': propiedad.superficie_total, 'unitCode': 'MTK' };
@@ -79,24 +84,55 @@ function buildPropertySchemas(propiedad: any, operacion: string, comuna: string,
     listing.numberOfBathroomsTotal = propiedad.banos;
     listing.floorSize = { '@type': 'QuantitativeValue', 'value': propiedad.superficie_total, 'unitCode': 'MTK' };
   }
+  const price = propiedad.precio_uf || propiedad.precio_pesos;
+  const currency = propiedad.precio_uf ? 'CLF' : 'CLP';
   const realEstateListing: any = {
     '@type': 'RealEstateListing',
+    '@id': `${propertyUrl}#listing`,
     'name': propiedad.titulo,
-    'description': propiedad.descripcion,
+    'description': propiedad.descripcion?.substring(0, 200),
     'datePosted': propiedad.fecha_publicacion,
-    'url': `https://www.propiedadesyparcelas.cl/${operacion}/${comuna}/${slug}`,
+    'url': propertyUrl,
+    'mainEntityOfPage': propertyUrl,
     'listing': listing,
+    'image': fotos?.length > 0 ? fotos[0].url_r2 : undefined,
     'offers': {
       '@type': 'Offer',
-      'price': propiedad.precio_uf || propiedad.precio_pesos,
-      'priceCurrency': propiedad.precio_uf ? 'CLF' : 'CLP',
-      'availability': 'https://schema.org/InStock'
+      'price': price,
+      'priceCurrency': currency,
+      'availability': 'https://schema.org/InStock',
+      'url': propertyUrl,
+    },
+  };
+  const organization = {
+    '@type': 'RealEstateAgent',
+    'name': 'Propiedades & Parcelas Chile',
+    'url': 'https://www.propiedadesyparcelas.cl/',
+    'logo': 'https://www.propiedadesyparcelas.cl/logo-nuevo.png',
+    'areaServed': { '@type': 'Country', 'name': 'Chile' },
+    'contactPoint': { '@type': 'ContactPoint', 'telephone': '+569-XXXX-XXXX', 'contactType': 'customer service' }
+  };
+  const website = {
+    '@type': 'WebSite',
+    'name': 'Propiedades & Parcelas Chile',
+    'url': 'https://www.propiedadesyparcelas.cl/',
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': {
+        '@type': 'EntryPoint',
+        'urlTemplate': 'https://www.propiedadesyparcelas.cl/buscar?q={search_term_string}'
+      },
+      'query-input': 'required name=search_term_string'
     }
   };
-  if (fotos && fotos.length > 0) realEstateListing.image = fotos[0].url_r2;
-  const organization = { '@type': 'RealEstateAgent', 'name': 'Propiedades & Parcelas Chile', 'url': 'https://www.propiedadesyparcelas.cl/', 'areaServed': { '@type': 'Country', 'name': 'Chile' } };
-  const website = { '@type': 'WebSite', 'name': 'Propiedades & Parcelas Chile', 'url': 'https://www.propiedadesyparcelas.cl/', 'potentialAction': { '@type': 'SearchAction', 'target': 'https://www.propiedadesyparcelas.cl/buscar?q={search_term_string}', 'query-input': 'required name=search_term_string' } };
-  return [breadcrumb, realEstateListing, organization, website];
+  const place = {
+    '@type': 'Place',
+    'name': propiedad.titulo,
+    'address': { '@type': 'PostalAddress', 'addressLocality': propiedad.comuna, 'addressRegion': propiedad.region, 'addressCountry': 'CL' },
+    'latitude': undefined,
+    'longitude': undefined,
+  };
+  return [breadcrumb, realEstateListing, organization, website].filter(Boolean);
 }
 
 // === METADATA ===
@@ -139,19 +175,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
        FROM propiedades p WHERE slug = ?`
     ).bind(propSlug).first();
     if (!propiedad) return {};
-    const propTipoLabel = propiedad.tipo_propiedad === 'terreno' ? 'Terreno / Parcela' : propiedad.tipo_propiedad === 'casa' ? 'Casa' : 'Local Comercial';
-    const tituloSEO = `${propTipoLabel} en ${propiedad.tipo_operacion === 'venta' ? 'Venta' : propiedad.tipo_operacion === 'compra' ? 'Compra' : 'Arriendo'} | ${propiedad.titulo} en ${propiedad.comuna} | Propiedades & Parcelas Chile`;
-    const descSEO = `${propiedad.descripcion.substring(0, 155)}... Encuentra parcelas en venta, arriendos de locales y casas en Chile en propiedadesyparcelas.cl`;
-    const operacionLabel = propiedad.tipo_operacion === 'venta' ? 'venta' : propiedad.tipo_operacion === 'compra' ? 'compra' : 'arriendo';
-    const keywords = `${propTipoLabel} en ${operacionLabel}, ${propTipoLabel} en ${propiedad.comuna}, ${propiedad.tipo_operacion} de ${propTipoLabel.toLowerCase()}, propiedades en ${propiedad.comuna}, ${propiedad.region}, corretaje, inmobiliaria Chile, propiedades y parcelas`;
-    return {
-      title: tituloSEO, description: descSEO, keywords,
-      openGraph: { title: tituloSEO, description: descSEO, type: 'website', locale: 'es_CL', siteName: 'Propiedades & Parcelas Chile', url: `https://www.propiedadesyparcelas.cl/${operacion}/${slug[0]}/${slug[1]}`, images: propiedad.foto_principal ? [{ url: propiedad.foto_principal, width: 1200, height: 630 }] : [] },
-      twitter: { card: 'summary_large_image', title: tituloSEO, description: descSEO, images: propiedad.foto_principal ? [propiedad.foto_principal] : [] },
-      robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
-      alternates: { canonical: `https://www.propiedadesyparcelas.cl/${operacion}/${slug[0]}/${slug[1]}` },
-      other: { 'og:price:amount': propiedad.precio_uf?.toString() || propiedad.precio_pesos?.toString() || '', 'og:price:currency': propiedad.precio_uf ? 'CLF' : 'CLP' },
-    };
+      const propTipoLabel = propiedad.tipo_propiedad === 'terreno' ? 'Terreno / Parcela' : propiedad.tipo_propiedad === 'casa' ? 'Casa' : 'Local Comercial';
+      const operacionTexto = propiedad.tipo_operacion === 'venta' ? 'Venta' : propiedad.tipo_operacion === 'compra' ? 'Compra' : 'Arriendo';
+      const precioTexto = propiedad.precio_uf ? `${propiedad.precio_uf} UF` : propiedad.precio_pesos ? `$${Number(propiedad.precio_pesos).toLocaleString('es-CL')}` : '';
+      const superficieTexto = propiedad.superficie_total ? `${propiedad.superficie_total} m²` : '';
+      const tituloSEO = `${propTipoLabel} en ${operacionTexto} en ${propiedad.comuna}, ${propiedad.region} | ${propiedad.titulo} | Propiedades & Parcelas Chile`;
+      const descSEOParts = [
+        propiedad.descripcion ? propiedad.descripcion.substring(0, 120) : '',
+        precioTexto ? `Precio: ${precioTexto}.` : '',
+        superficieTexto ? `Superficie: ${superficieTexto}.` : '',
+        `Ubicación: ${propiedad.comuna}, ${propiedad.region}, Chile.`,
+        `Publicado en Propiedades & Parcelas Chile, el portal #1 de propiedades en Chile.`,
+      ].filter(Boolean);
+      const descSEO = descSEOParts.join(' ');
+      const operacionLabel = propiedad.tipo_operacion === 'venta' ? 'venta' : propiedad.tipo_operacion === 'compra' ? 'compra' : 'arriendo';
+      const keywords = `${propTipoLabel} en ${operacionLabel}, ${propTipoLabel} en ${propiedad.comuna}, ${propiedad.tipo_operacion} de ${propTipoLabel.toLowerCase()}, propiedades en ${propiedad.comuna}, ${propiedad.region}, corretaje, inmobiliaria Chile, propiedades y parcelas, ${propiedad.comuna} ${operacionLabel}, comprar ${propTipoLabel.toLowerCase()} ${propiedad.comuna}`;
+      const canonicalUrl = `https://www.propiedadesyparcelas.cl/${operacion}/${slug[0]}/${slug[1]}`;
+      return {
+        title: tituloSEO, description: descSEO, keywords,
+        openGraph: {
+          title: tituloSEO,
+          description: descSEO,
+          type: 'website',
+          locale: 'es_CL',
+          siteName: 'Propiedades & Parcelas Chile',
+          url: canonicalUrl,
+          images: propiedad.foto_principal ? [{ url: propiedad.foto_principal, width: 1200, height: 630 }] : [],
+        },
+        twitter: { card: 'summary_large_image', title: tituloSEO, description: descSEO, images: propiedad.foto_principal ? [propiedad.foto_principal] : [] },
+        robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
+        alternates: { canonical: canonicalUrl },
+        other: {
+          'og:price:amount': propiedad.precio_uf?.toString() || propiedad.precio_pesos?.toString() || '',
+          'og:price:currency': propiedad.precio_uf ? 'CLF' : 'CLP',
+          'og:locality': propiedad.comuna,
+          'og:region': propiedad.region,
+          'og:country-name': 'Chile',
+        },
+      };
   }
 
   return {};

@@ -10,16 +10,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Faltan datos requeridos' }, { status: 400 });
     }
 
+    // Usamos el contentType enviado desde el cliente, o detectamos del archivo
+    const originalType = (formData.get('contentType') as string) || file.type || 'image/jpeg';
+    const ext = originalType === 'image/png' ? 'png' : 'jpg';
+
     // Convertimos el archivo a un ArrayBuffer para manipularlo
     const arrayBuffer = await file.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
 
     // Generamos un nombre único para la imagen
     const uniqueId = crypto.randomUUID();
-    const fileName = `${propiedadId}/${uniqueId}.webp`;
+    const fileName = `${propiedadId}/${uniqueId}.${ext}`;
 
     // 1. Guardamos el archivo directamente en el Bucket R2 de Cloudflare
-    // El "binding" BUCKET_FOTOS que configuramos en el wrangler.toml se accede desde el objeto env del contexto de Cloudflare
     let bucket: any = null;
     try {
       const { getCloudflareContext } = await import("@opennextjs/cloudflare");
@@ -32,11 +35,10 @@ export async function POST(request: NextRequest) {
     }
 
     await bucket.put(fileName, buffer, {
-      httpMetadata: { contentType: 'image/webp' }
+      httpMetadata: { contentType: originalType }
     });
 
-    // La URL pública base de tu almacenamiento R2
-    const urlPublica = `https://fotos.propiedadesyparcelas.cl/${fileName}`;
+    const urlPublica = `https://propiedadesyparcelas.cl/fotos/${fileName}`;
 
     // 2. Registramos la URL de la foto en la base de datos D1
     let db: any = null;

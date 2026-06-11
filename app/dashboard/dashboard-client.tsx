@@ -31,31 +31,31 @@ interface DashboardClientProps {
   userProfile: UserProfile;
 }
 
-// Predefinidos chilenos
+// Todas las comunas de Chile por región (346 comunas oficiales)
 const REGIONES_Y_COMUNAS = [
-  { region: 'Arica y Parinacota', comunas: ['Arica', 'Putre'] },
-  { region: 'Tarapacá', comunas: ['Iquique', 'Alto Hospicio', 'Pozo Almonte'] },
-  { region: 'Antofagasta', comunas: ['Antofagasta', 'Calama', 'Tocopilla', 'Mejillones'] },
-  { region: 'Atacama', comunas: ['Copiapó', 'Vallenar', 'Caldera', 'Chañaral'] },
-  { region: 'Coquimbo', comunas: ['La Serena', 'Coquimbo', 'Ovalle', 'Illapel', 'Vicuña'] },
-  { region: 'Valparaíso', comunas: ['Valparaíso', 'Viña del Mar', 'Quilpué', 'Villa Alemana', 'San Antonio', 'Algarrobo', 'Casablanca', 'Concón'] },
-  { region: 'Metropolitana de Santiago', comunas: ['Santiago', 'Melipilla', 'Pomaire', 'Colina', 'Lampa', 'Pirque', 'Buin', 'Paine', 'Talagante', 'Providencia', 'Las Condes'] },
-  { region: 'Libertador Gral. Bernardo O\'Higgins', comunas: ['Rancagua', 'San Fernando', 'Pichilemu', 'Machalí', 'Chimbarongo'] },
-  { region: 'Maule', comunas: ['Talca', 'Curicó', 'Linares', 'Constitución', 'Cauquenes'] },
-  { region: 'Ñuble', comunas: ['Chillán', 'Bulnes', 'San Carlos', 'Cobquecura'] },
-  { region: 'Biobío', comunas: ['Concepción', 'Talcahuano', 'Chiguayante', 'San Pedro de la Paz', 'Coronel', 'Los Ángeles'] },
-  { region: 'La Araucanía', comunas: ['Temuco', 'Pucón', 'Villarrica', 'Padre Las Casas', 'Angol'] },
-  { region: 'Los Ríos', comunas: ['Valdivia', 'Panguipulli', 'La Unión', 'Río Bueno'] },
-  { region: 'Los Lagos', comunas: ['Puerto Montt', 'Puerto Varas', 'Osorno', 'Castro', 'Ancud', 'Frutillar'] },
-  { region: 'Aysén', comunas: ['Coyhaique', 'Puerto Aysén', 'Cochrane'] },
-  { region: 'Magallanes', comunas: ['Punta Arenas', 'Puerto Natales', 'Porvenir'] }
+  { region: 'Arica y Parinacota', comunas: ['Arica', 'Camarones', 'Putre', 'General Lagos'] },
+  { region: 'Tarapacá', comunas: ['Iquique', 'Alto Hospicio', 'Pozo Almonte', 'Camiña', 'Colchane', 'Huara', 'Pica'] },
+  { region: 'Antofagasta', comunas: ['Antofagasta', 'Mejillones', 'Sierra Gorda', 'Taltal', 'Calama', 'Ollagüe', 'San Pedro de Atacama', 'Tocopilla', 'María Elena'] },
+  { region: 'Atacama', comunas: ['Copiapó', 'Caldera', 'Tierra Amarilla', 'Chañaral', 'Diego de Almagro', 'Vallenar', 'Alto del Carmen', 'Freirina', 'Huasco'] },
+  { region: 'Coquimbo', comunas: ['La Serena', 'Coquimbo', 'Andacollo', 'La Higuera', 'Paiguano', 'Vicuña', 'Illapel', 'Canela', 'Los Vilos', 'Salamanca', 'Ovalle', 'Combarbalá', 'Monte Patria', 'Punitaqui', 'Río Hurtado'] },
+  { region: 'Valparaíso', comunas: ['Valparaíso', 'Casablanca', 'Concón', 'Juan Fernández', 'Puchuncaví', 'Quintero', 'Viña del Mar', 'Isla de Pascua', 'Los Andes', 'Calle Larga', 'Rinconada', 'San Esteban', 'La Ligua', 'Cabildo', 'Papudo', 'Petorca', 'Zapallar', 'Quillota', 'Hijuelas', 'La Calera', 'La Cruz', 'Nogales', 'San Antonio', 'Algarrobo', 'Cartagena', 'El Quisco', 'El Tabo', 'Santo Domingo', 'San Felipe', 'Catemu', 'Llay-Llay', 'Panquehue', 'Putaendo', 'Villa Alemana', 'Limache', 'Olmué', 'Quilpué'] },
+  { region: 'Metropolitana de Santiago', comunas: ['Santiago', 'Cerrillos', 'Cerro Navia', 'Conchalí', 'El Bosque', 'Estación Central', 'Huechuraba', 'Independencia', 'La Cisterna', 'La Florida', 'La Granja', 'La Pintana', 'La Reina', 'Las Condes', 'Lo Barnechea', 'Lo Espejo', 'Lo Prado', 'Macul', 'Maipú', 'Ñuñoa', 'Pedro Aguirre Cerda', 'Peñalolén', 'Providencia', 'Pudahuel', 'Quilicura', 'Quinta Normal', 'Recoleta', 'Renca', 'San Joaquín', 'San Miguel', 'San Ramón', 'Vitacura', 'Colina', 'Lampa', 'Til Til', 'Pirque', 'Puente Alto', 'San José de Maipo', 'Buin', 'Calera de Tango', 'Paine', 'San Bernardo', 'Alhué', 'Curacaví', 'María Pinto', 'Melipilla', 'San Pedro', 'Talagante', 'El Monte', 'Isla de Maipo', 'Padre Hurtado', 'Peñaflor'] },
+  { region: "Libertador Gral. Bernardo O'Higgins", comunas: ['Rancagua', 'Codegua', 'Coinco', 'Coltauco', 'Doñihue', 'Graneros', 'Las Cabras', 'Machalí', 'Malloa', 'Mostazal', 'Olivar', 'Peumo', 'Pichidegua', 'Quinta de Tilcoco', 'Rengo', 'Requínoa', 'San Vicente', 'Pichilemu', 'La Estrella', 'Litueche', 'Marchihue', 'Navidad', 'Paredones', 'San Fernando', 'Chépica', 'Chimbarongo', 'Lolol', 'Nancagua', 'Palmilla', 'Peralillo', 'Placilla', 'Pumanque', 'Santa Cruz'] },
+  { region: 'Maule', comunas: ['Talca', 'Constitución', 'Curepto', 'Empedrado', 'Maule', 'Pelarco', 'Pencahue', 'Río Claro', 'San Clemente', 'San Rafael', 'Cauquenes', 'Chanco', 'Pelluhue', 'Curicó', 'Hualañé', 'Licantén', 'Molina', 'Rauco', 'Romeral', 'Sagrada Familia', 'Teno', 'Vichuquén', 'Linares', 'Colbún', 'Longaví', 'Parral', 'Retiro', 'San Javier', 'Villa Alegre', 'Yerbas Buenas'] },
+  { region: 'Ñuble', comunas: ['Chillán', 'Bulnes', 'Chillán Viejo', 'El Carmen', 'Pemuco', 'Pinto', 'Quillón', 'San Ignacio', 'Yungay', 'Coihueco', 'Cobquecura', 'Ninhue', 'Portezuelo', 'Quirihue', 'Ránquil', 'Treguaco', 'San Carlos', 'Ñiquén', 'San Fabián', 'San Nicolás'] },
+  { region: 'Biobío', comunas: ['Concepción', 'Coronel', 'Chiguayante', 'Florida', 'Hualqui', 'Lota', 'Penco', 'San Pedro de la Paz', 'Santa Juana', 'Talcahuano', 'Tomé', 'Hualpén', 'Los Ángeles', 'Antuco', 'Cabrero', 'Laja', 'Mulchén', 'Nacimiento', 'Negrete', 'Quilaco', 'Quilleco', 'San Rosendo', 'Santa Bárbara', 'Tucapel', 'Yumbel', 'Alto Biobío', 'Cañete', 'Contulmo', 'Curanilahue', 'Lebu', 'Los Álamos', 'Tirúa'] },
+  { region: 'La Araucanía', comunas: ['Temuco', 'Carahue', 'Cholchol', 'Cunco', 'Curarrehue', 'Freire', 'Galvarino', 'Gorbea', 'Lautaro', 'Loncoche', 'Nueva Imperial', 'Padre Las Casas', 'Perquenco', 'Pitrufquén', 'Pucón', 'Saavedra', 'Teodoro Schmidt', 'Toltén', 'Vilcún', 'Villarrica', 'Angol', 'Collipulli', 'Curacautín', 'Ercilla', 'Lonquimay', 'Los Sauces', 'Lumaco', 'Purén', 'Renaico', 'Traiguén', 'Victoria'] },
+  { region: 'Los Ríos', comunas: ['Valdivia', 'Corral', 'Lanco', 'Los Lagos', 'Máfil', 'Mariquina', 'Paillaco', 'Panguipulli', 'La Unión', 'Futrono', 'Lago Ranco', 'Río Bueno'] },
+  { region: 'Los Lagos', comunas: ['Puerto Montt', 'Calbuco', 'Cochamó', 'Fresia', 'Frutillar', 'Los Muermos', 'Llanquihue', 'Maullín', 'Puerto Varas', 'Ancud', 'Castro', 'Chonchi', 'Curaco de Vélez', 'Dalcahue', 'Puqueldón', 'Queilén', 'Quellón', 'Quemchi', 'Quinchao', 'Osorno', 'Puerto Octay', 'Purranque', 'Puyehue', 'Río Negro', 'San Juan de la Costa', 'San Pablo', 'Chaitén', 'Futaleufú', 'Hualaihué', 'Palena'] },
+  { region: 'Aysén', comunas: ['Coyhaique', 'Lago Verde', 'Aysén', 'Cisnes', 'Guaitecas', 'Cochrane', "O'Higgins", 'Tortel', 'Chile Chico', 'Río Ibáñez'] },
+  { region: 'Magallanes', comunas: ['Punta Arenas', 'Laguna Blanca', 'Río Verde', 'San Gregorio', 'Cabo de Hornos', 'Antártica', 'Porvenir', 'Primavera', 'Timaukel', 'Puerto Natales', 'Torres del Paine'] }
 ];
 
 const PLANES_INFO = {
-  gratis: { nombre: 'Gratis', CLP: '$0', maxFotos: 5, maxVideos: 0, maxAvisos: 2, seo: 'Estándar', css: 'bg-slate-100 border-slate-300 text-slate-700' },
-  plan_10k: { nombre: 'Plan 10K', CLP: '$10.000', maxFotos: 8, maxVideos: 1, maxAvisos: 4, seo: 'Exposición Media + Impulso SEO', css: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
-  plan_20k: { nombre: 'Plan 20K', CLP: '$20.000', maxFotos: 20, maxVideos: 3, maxAvisos: 10, seo: 'Exposición Alta + Impulso SEO VIP', css: 'bg-blue-50 border-blue-200 text-blue-700' },
-  plan_50k: { nombre: 'Plan 50K', CLP: '$50.000', maxFotos: 30, maxVideos: 10, maxAvisos: 50, seo: 'Exposición Máxima + SEO Ultra', css: 'bg-amber-50 border-amber-200 text-amber-700' },
+  gratis: { nombre: 'Gratis', CLP: '$0', maxFotos: 10, maxVideos: 1, maxAvisos: 4, seo: 'Estándar', css: 'bg-slate-100 border-slate-300 text-slate-700' },
+  plan_10k: { nombre: 'Plan 10K', CLP: '$10.000', maxFotos: 16, maxVideos: 2, maxAvisos: 8, seo: 'Exposición Media + Impulso SEO', css: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
+  plan_20k: { nombre: 'Plan 20K', CLP: '$20.000', maxFotos: 40, maxVideos: 6, maxAvisos: 20, seo: 'Exposición Alta + Impulso SEO VIP', css: 'bg-blue-50 border-blue-200 text-blue-700' },
+  plan_50k: { nombre: 'Plan 50K', CLP: '$50.000', maxFotos: 60, maxVideos: 20, maxAvisos: 100, seo: 'Exposición Máxima + SEO Ultra', css: 'bg-amber-50 border-amber-200 text-amber-700' },
   admin: { nombre: 'Dueño (VIP)', CLP: 'Gratis (Admin)', maxFotos: 999999, maxVideos: 999999, maxAvisos: 999999, seo: 'Prioridad Absoluta', css: 'bg-purple-50 border-purple-200 text-purple-700' }
 };
 
@@ -103,8 +103,8 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
   const [videoInputUrl, setVideoInputUrl] = useState('');
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
 
-  // Compresión Client-Side WebP Canvas
-  const compressImageToWebp = async (file: File): Promise<Blob> => {
+  // Compresión Client-Side Canvas con formato original
+  const compressImage = async (file: File): Promise<{ blob: Blob; type: string }> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -113,7 +113,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 1200;
+          const maxDim = 1600;
 
           if (width > maxDim || height > maxDim) {
             if (width > height) {
@@ -133,13 +133,15 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
             return;
           }
           ctx.drawImage(img, 0, 0, width, height);
+          const isPng = file.type === 'image/png';
+          const mimeType = isPng ? 'image/png' : 'image/jpeg';
           canvas.toBlob(
             (blob) => {
-              if (blob) resolve(blob);
+              if (blob) resolve({ blob, type: mimeType });
               else reject(new Error('Image conversion failed'));
             },
-            'image/webp',
-            0.5
+            mimeType,
+            isPng ? undefined : 0.85
           );
         };
         img.onerror = () => reject(new Error('Failed to load image'));
@@ -384,6 +386,11 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
 
   const [cuponCode, setCuponCode] = useState('');
   const [cuponMsg, setCuponMsg] = useState('');
+  const [cuponValidated, setCuponValidated] = useState(false);
+  const [cuponDiscount, setCuponDiscount] = useState(0);
+  const [validatingCupon, setValidatingCupon] = useState(false);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [uploadProgressMsg, setUploadProgressMsg] = useState('');
 
   // Generar descripción con IA
   const generarDescripcionIA = async () => {
@@ -423,6 +430,39 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
     setGenerandoIA(false);
   };
 
+  // Validar cupón de descuento
+  const validarCupon = async () => {
+    if (!cuponCode.trim()) {
+      setCuponMsg('Ingresa un código de cupón');
+      setCuponValidated(false);
+      return;
+    }
+    setValidatingCupon(true);
+    setCuponMsg('');
+    setCuponValidated(false);
+    try {
+      const res = await fetch('/api/admin/cupones/validar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: cuponCode.trim().toUpperCase() }),
+      });
+      const data = await res.json();
+      if (data.valido) {
+        setCuponValidated(true);
+        setCuponDiscount(data.descuento);
+        setCuponMsg(`✅ Cupón válido: ${data.descuento}% de descuento en ${data.plan_tipo}`);
+      } else {
+        setCuponValidated(false);
+        setCuponDiscount(0);
+        setCuponMsg(`❌ ${data.error || 'Cupón inválido o expirado'}`);
+      }
+    } catch {
+      setCuponValidated(false);
+      setCuponMsg('❌ Error al validar cupón');
+    }
+    setValidatingCupon(false);
+  };
+
   // Compra de plan a través de Flow
   const iniciarCompraSuscripcion = async (plan: string) => {
     try {
@@ -431,7 +471,12 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
       setCuponMsg('');
 
       const body: any = { plan };
-      if (cuponCode.trim()) body.cupon = cuponCode.trim();
+      if (cuponValidated && cuponCode.trim()) {
+        body.cupon = cuponCode.trim();
+        body.descuento = cuponDiscount;
+      } else if (cuponCode.trim() && !cuponValidated) {
+        body.cupon = cuponCode.trim();
+      }
 
       const response = await fetch('/api/pagos/flow-create', {
         method: 'POST',
@@ -532,15 +577,23 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
         propiedadId = propiedadData.propiedadId;
       }
 
-      // 2. Comprimir y subir fotos con Canvas WebP Client-side
+      // 2. Comprimir y subir fotos con Canvas Client-side
       const failedUploads: string[] = [];
+      if (fotosFiles.length + videoFiles.length + videosUrls.length > 0) {
+        setUploadingMedia(true);
+      }
+
       for (let i = 0; i < fotosFiles.length; i++) {
         const file = fotosFiles[i];
         try {
-          const compressedBlob = await compressImageToWebp(file);
+          setUploadProgressMsg(`Comprimiendo y subiendo fotografía ${i + 1} de ${fotosFiles.length}...`);
+          const { blob, type } = await compressImage(file);
+          const ext = type === 'image/png' ? 'png' : 'jpg';
+          setUploadProgressMsg(`Subiendo fotografía ${i + 1} de ${fotosFiles.length}...`);
           const uploadForm = new FormData();
-          uploadForm.append('file', compressedBlob, `foto-${i}.webp`);
+          uploadForm.append('file', blob, `foto-${i}.${ext}`);
           uploadForm.append('propiedadId', propiedadId);
+          uploadForm.append('contentType', type);
 
           const uploadRes = await fetch('/api/upload', {
             method: 'POST',
@@ -560,7 +613,9 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
       for (let i = 0; i < videoFiles.length; i++) {
         const file = videoFiles[i];
         try {
+          setUploadProgressMsg(`Comprimiendo video ${i + 1} de ${videoFiles.length}... Espere mientras procesamos su video, esto puede tomar unos momentos.`);
           const compressedBlob = await compressVideo(file);
+          setUploadProgressMsg(`Subiendo video ${i + 1} de ${videoFiles.length}...`);
           const uploadForm = new FormData();
           uploadForm.append('file', compressedBlob, `video-${i}.webm`);
           uploadForm.append('propiedadId', propiedadId);
@@ -605,6 +660,8 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
       if (failedUploads.length > 0) {
         setUploadErrors(failedUploads);
       }
+      setUploadingMedia(false);
+      setUploadProgressMsg('');
 
       if (failedUploads.length === 0) {
         setSuccessMessage(isEditing ? '¡Propiedad actualizada con éxito! Los cambios ya están visibles.' : '¡Felicidades! Tu anuncio ha sido publicado con éxito y ya está optimizado para SEO.');
@@ -658,6 +715,21 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
           </div>
         </div>
       </header>
+
+      {/* Overlay de compresión de medios */}
+      {uploadingMedia && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-indigo-500/30 rounded-3xl p-10 max-w-md mx-4 text-center shadow-2xl shadow-indigo-500/10">
+            <div className="animate-spin w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full mx-auto mb-6"></div>
+            <h3 className="text-xl font-black text-white mb-2">Procesando tus archivos</h3>
+            <p className="text-indigo-200 text-sm mb-2">{uploadProgressMsg}</p>
+            <div className="w-full bg-slate-800 rounded-full h-2 mt-4 overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-500 to-blue-500 h-full rounded-full animate-pulse" style={{ width: '60%' }}></div>
+            </div>
+            <p className="text-slate-500 text-xs mt-4">Por favor no cierres esta página ni recargues</p>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -1231,7 +1303,7 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                 <p className="text-slate-400 text-xs">
                   Tu plan <strong>{infoPlanActual.nombre}</strong> permite subir hasta <strong>{infoPlanActual.maxFotos === 999999 ? 'Ilimitadas' : infoPlanActual.maxFotos} fotos</strong>.
                   <br />
-                  <span className="text-indigo-300">💡 Las fotos son comprimidas localmente a WebP (~150KB) antes de subirse para una velocidad de carga instantánea.</span>
+                  <span className="text-indigo-300">💡 Las fotos se optimizan localmente preservando su formato original (PNG/JPEG) para máxima calidad y compatibilidad.</span>
                 </p>
 
                 <div className="flex items-center justify-center w-full mt-4">
@@ -1409,23 +1481,35 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
 
               {/* Cupón de descuento */}
               <div className="max-w-md mx-auto mb-10">
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
+                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex items-center gap-2">
                   <input
                     type="text"
                     value={cuponCode}
-                    onChange={e => setCuponCode(e.target.value.toUpperCase())}
+                    onChange={e => { setCuponCode(e.target.value.toUpperCase()); setCuponValidated(false); setCuponMsg(''); }}
                     placeholder="CÓDIGO CUPÓN"
                     className="flex-1 bg-slate-900 border border-slate-700 text-white p-3 rounded-xl text-sm font-bold uppercase tracking-wider focus:ring-2 focus:ring-indigo-500 outline-none placeholder:text-slate-600"
                   />
                   <button
-                    onClick={() => { setCuponCode(''); setCuponMsg(''); }}
-                    className="text-slate-500 hover:text-white text-xs font-bold px-2"
+                    type="button"
+                    onClick={validarCupon}
+                    disabled={validatingCupon || !cuponCode.trim()}
+                    className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold text-[10px] px-3 py-3 rounded-xl transition-all uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {validatingCupon ? '...' : 'Validar'}
+                  </button>
+                  <button
+                    onClick={() => { setCuponCode(''); setCuponMsg(''); setCuponValidated(false); setCuponDiscount(0); }}
+                    className="text-slate-500 hover:text-white text-xs font-bold px-1"
                   >
                     ✕
                   </button>
                 </div>
-                {cuponMsg && <p className="text-xs text-emerald-400 mt-2 text-center">{cuponMsg}</p>}
-                <p className="text-[10px] text-slate-600 text-center mt-2">¿Tienes un cupón de descuento? Ingresa el código arriba y luego selecciona tu plan.</p>
+                {cuponMsg && (
+                  <p className={`text-xs mt-2 text-center font-bold ${cuponValidated ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {cuponMsg}
+                  </p>
+                )}
+                <p className="text-[10px] text-slate-600 text-center mt-2">¿Tienes un cupón de descuento? Valídalo primero y luego selecciona tu plan.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -1440,9 +1524,9 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                     </div>
                     <p className="text-slate-400 text-xs">Exposición media del aviso e impulso inicial de indexación en buscadores.</p>
                     <ul className="space-y-2 pt-4 text-xs text-slate-300 font-medium">
-                      <li className="flex items-center gap-2">✅ Hasta <strong>4 Avisos Activos</strong></li>
-                      <li className="flex items-center gap-2">✅ Hasta <strong>8 Fotografías</strong></li>
-                      <li className="flex items-center gap-2">✅ Hasta <strong>1 Video</strong> (Enlace)</li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>8 Avisos Activos</strong></li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>16 Fotografías</strong></li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>2 Videos</strong> (MP4 / Enlace)</li>
                       <li className="flex items-center gap-2">✅ Impulso de Búsqueda Medio</li>
                     </ul>
                   </div>
@@ -1468,9 +1552,9 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                     </div>
                     <p className="text-slate-400 text-xs">Exposición alta de tu aviso y posicionamiento premium con microformatos inmobiliarios.</p>
                     <ul className="space-y-2 pt-4 text-xs text-slate-300 font-medium">
-                      <li className="flex items-center gap-2">✅ Hasta <strong>10 Avisos Activos</strong></li>
-                      <li className="flex items-center gap-2">✅ Hasta <strong>20 Fotografías</strong></li>
-                      <li className="flex items-center gap-2">✅ Hasta <strong>3 Videos</strong> (MP4 / Enlace)</li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>20 Avisos Activos</strong></li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>40 Fotografías</strong></li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>6 Videos</strong> (MP4 / Enlace)</li>
                       <li className="flex items-center gap-2">✅ Impulso de Búsqueda Alto</li>
                       <li className="flex items-center gap-2 text-indigo-400">✨ Indexación Google Rich Snippets</li>
                     </ul>
@@ -1494,9 +1578,9 @@ export default function DashboardClient({ propiedades, userNombre, userProfile }
                     </div>
                     <p className="text-slate-400 text-xs">Para corredores y empresas inmobiliarias que requieren máxima prioridad y volumen.</p>
                     <ul className="space-y-2 pt-4 text-xs text-slate-300 font-medium">
-                      <li className="flex items-center gap-2">✅ Hasta <strong>50 Avisos Activos</strong></li>
-                      <li className="flex items-center gap-2">✅ Hasta <strong>30 Fotografías</strong></li>
-                      <li className="flex items-center gap-2">✅ Hasta <strong>10 Videos</strong> (MP4 / Enlace)</li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>100 Avisos Activos</strong></li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>60 Fotografías</strong></li>
+                      <li className="flex items-center gap-2">✅ Hasta <strong>20 Videos</strong> (MP4 / Enlace)</li>
                       <li className="flex items-center gap-2">✅ Exposición Absoluta de Prioridad</li>
                       <li className="flex items-center gap-2 text-amber-400">✨ Campaña SEO y microdatos de Agencia</li>
                     </ul>

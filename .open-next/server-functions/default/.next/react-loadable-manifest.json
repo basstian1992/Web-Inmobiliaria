@@ -2,25 +2,25 @@
   "app\\dashboard\\dashboard-client.tsx -> @ffmpeg/ffmpeg": {
     "id": 5654,
     "files": [
-      "static/chunks/654.8f4ad1d027ea3995.js"
+      "static/chunks/5654.38640df68fd016d3.js"
     ]
   },
   "app\\dashboard\\dashboard-client.tsx -> @ffmpeg/util": {
     "id": 3586,
     "files": [
-      "static/chunks/586.b76bf15c2991d38d.js"
+      "static/chunks/3586.d75094cf1d259353.js"
     ]
   },
   "node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\ClerkProvider.js -> ./keyless-creator-reader.js": {
     "id": 2642,
     "files": [
-      "static/chunks/642.31d6e6fc21dcd0e8.js"
+      "static/chunks/2642.69bd88b5a6bfb2dd.js"
     ]
   },
   "node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\keyless-cookie-sync.js -> ../keyless-actions.js": {
     "id": 3017,
     "files": [
-      "static/chunks/17.7bbdf6f4ac3f817e.js"
+      "static/chunks/3017.7e636ca69c45da69.js"
     ]
   },
   "node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
@@ -32,7 +32,7 @@
   "node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
     "id": 9341,
     "files": [
-      "static/chunks/341.716d46e6e5cb6bdc.js"
+      "static/chunks/9341.e21ab9b6d7c03978.js"
     ]
   }
 }

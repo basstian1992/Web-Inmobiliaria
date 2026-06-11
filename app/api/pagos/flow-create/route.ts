@@ -43,26 +43,6 @@ export async function POST(request: NextRequest) {
       subject = 'Suscripción Portal Inmobiliario - Plan 50K (Exposición Máxima)';
     }
 
-    // Validar cupón de descuento si se envió
-    let descuentoAplicado = 0;
-    let cuponInfo: any = null;
-    const dbForCoupon = db; // same db reference
-
-    if (cupon && dbForCoupon) {
-      cuponInfo = await dbForCoupon.prepare(
-        `SELECT * FROM cupones WHERE codigo = ? AND activo = 1 AND usos_actuales < usos_maximos AND (fecha_expiracion IS NULL OR fecha_expiracion > DATETIME('now'))`
-      ).bind(cupon.toUpperCase()).first();
-
-      if (!cuponInfo) {
-        return NextResponse.json({ error: 'Cupón inválido, expirado o sin usos disponibles' }, { status: 400 });
-      }
-
-      descuentoAplicado = cuponInfo.descuento;
-      const descuentoMonto = Math.round(monto * descuentoAplicado / 100);
-      monto = monto - descuentoMonto;
-      subject = `${subject} (CUPÓN: ${cupon.toUpperCase()} - ${descuentoAplicado}% DCTO)`;
-    }
-
     // Obtener variables de entorno de Cloudflare y BD
     let db: any = null;
     let flowApiKey = '';
@@ -81,6 +61,25 @@ export async function POST(request: NextRequest) {
       flowApiKey = process.env.FLOW_API_KEY || '';
       flowSecretKey = process.env.FLOW_SECRET_KEY || '';
       flowSandbox = process.env.FLOW_SANDBOX || 'true';
+    }
+
+    // Validar cupón de descuento si se envió
+    let descuentoAplicado = 0;
+    let cuponInfo: any = null;
+
+    if (cupon && db) {
+      cuponInfo = await db.prepare(
+        `SELECT * FROM cupones WHERE codigo = ? AND activo = 1 AND usos_actuales < usos_maximos AND (fecha_expiracion IS NULL OR fecha_expiracion > DATETIME('now'))`
+      ).bind(cupon.toUpperCase()).first();
+
+      if (!cuponInfo) {
+        return NextResponse.json({ error: 'Cupón inválido, expirado o sin usos disponibles' }, { status: 400 });
+      }
+
+      descuentoAplicado = cuponInfo.descuento;
+      const descuentoMonto = Math.round(monto * descuentoAplicado / 100);
+      monto = monto - descuentoMonto;
+      subject = `${subject} (CUPÓN: ${cupon.toUpperCase()} - ${descuentoAplicado}% DCTO)`;
     }
 
     // Buscar en la configuración del administrador si el link estático fue configurado

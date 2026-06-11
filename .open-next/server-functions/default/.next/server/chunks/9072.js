@@ -1,0 +1,1 @@
+"use strict";exports.id=9072,exports.ids=[9072],exports.modules={99072:(a,b,c)=>{c.d(b,{FFmpeg:()=>d});class d{constructor(){throw Error("ffmpeg.wasm does not support nodejs")}}}};

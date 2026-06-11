@@ -36,6 +36,14 @@
       "namedRegex": "^/api/propiedades/(?<nxtPid>[^/]+?)/media(?:/)?$"
     },
     {
+      "page": "/fotos/[...slug]",
+      "regex": "^/fotos/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/fotos/(?<nxtPslug>.+?)(?:/)?$"
+    },
+    {
       "page": "/sign-in/[[...sign-in]]",
       "regex": "^/sign\\-in(?:/(.+?))?(?:/)?$",
       "routeKeys": {
@@ -52,14 +60,21 @@
       "namedRegex": "^/sign\\-up(?:/(?<nxtPsignup>.+?))?(?:/)?$"
     },
     {
-      "page": "/[operacion]/[comuna]/[slug]",
-      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)(?:/)?$",
+      "page": "/[operacion]",
+      "regex": "^/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPoperacion": "nxtPoperacion"
+      },
+      "namedRegex": "^/(?<nxtPoperacion>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[operacion]/[...slug]",
+      "regex": "^/([^/]+?)/(.+?)(?:/)?$",
       "routeKeys": {
         "nxtPoperacion": "nxtPoperacion",
-        "nxtPcomuna": "nxtPcomuna",
         "nxtPslug": "nxtPslug"
       },
-      "namedRegex": "^/(?<nxtPoperacion>[^/]+?)/(?<nxtPcomuna>[^/]+?)/(?<nxtPslug>[^/]+?)(?:/)?$"
+      "namedRegex": "^/(?<nxtPoperacion>[^/]+?)/(?<nxtPslug>.+?)(?:/)?$"
     }
   ],
   "staticRoutes": [

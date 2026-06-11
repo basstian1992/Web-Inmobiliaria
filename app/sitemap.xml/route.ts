@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
 
-// Forzamos a Next.js a que no guarde esta página en caché vieja, sino que la calcule al instante
 export const dynamic = 'force-dynamic';
 
-
 export async function GET() {
-  // En el entorno de Cloudflare, la base de datos se inyecta globalmente
-  // Aquí simulamos la llamada a tu base de datos D1 propiedadesyparcelas-db
   const baseUrl = 'https://propiedadesyparcelas.cl';
+  const today = new Date().toISOString().split('T')[0];
 
   try {
     let db: any = null;
@@ -21,52 +18,63 @@ export async function GET() {
       throw new Error('Base de datos D1 no vinculada');
     }
 
-    // 1. Landing pages estáticas por operación
     const operaciones = ['venta', 'arriendo', 'compra'];
     const tipos = ['terrenos', 'casas', 'locales-comerciales'];
 
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+            xmlns:xhtml="http://www.w3.org/1999/xhtml"
+            xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+            xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
       <url>
         <loc>${baseUrl}</loc>
+        <lastmod>${today}</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
       </url>
       <url>
         <loc>${baseUrl}/buscar</loc>
+        <lastmod>${today}</lastmod>
         <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+      </url>
+      <url>
+        <loc>${baseUrl}/consejos</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>`;
 
-    // Landing pages por operación (ej: /venta, /arriendo)
     for (const op of operaciones) {
       sitemap += `
       <url>
         <loc>${baseUrl}/${op}</loc>
+        <lastmod>${today}</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.9</priority>
       </url>`;
-      // Landing pages por tipo (ej: /venta/casas, /arriendo/terrenos)
       for (const t of tipos) {
         sitemap += `
       <url>
         <loc>${baseUrl}/${op}/${t}</loc>
+        <lastmod>${today}</lastmod>
         <changefreq>daily</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
       </url>`;
       }
     }
 
-    // 2. Consultamos las propiedades
+    // Consultar propiedades con fecha de publicación para lastmod
     const { results } = await db.prepare(
-      `SELECT slug, comuna, tipo_operacion FROM propiedades ORDER BY prioridad_score DESC`
+      `SELECT slug, comuna, tipo_operacion, fecha_publicacion, prioridad_score FROM propiedades ORDER BY prioridad_score DESC, fecha_publicacion DESC`
     ).all();
 
-    // 3. Inyectamos dinámicamente cada propiedad publicada
     results.forEach((propiedad: any) => {
+      const lastmod = propiedad.fecha_publicacion ? propiedad.fecha_publicacion.split('T')[0] : today;
       sitemap += `
       <url>
-        <loc>${baseUrl}/${propiedad.tipo_operacion}/${propiedad.comuna}/${propiedad.slug}</loc>
+        <loc>${baseUrl}/${propiedad.tipo_operacion}/${encodeURIComponent(propiedad.comuna)}/${encodeURIComponent(propiedad.slug)}</loc>
+        <lastmod>${lastmod}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>${propiedad.prioridad_score > 0 ? '0.9' : '0.7'}</priority>
       </url>`;
@@ -74,11 +82,11 @@ export async function GET() {
 
     sitemap += `</urlset>`;
 
-    // 4. Retornamos la respuesta con el formato XML correcto para SEO
     return new NextResponse(sitemap, {
       headers: {
-        'Content-Type': 'application/xml',
+        'Content-Type': 'application/xml; charset=utf-8',
         'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600',
+        'X-Robots-Tag': 'noindex, follow',
       },
     });
   } catch (error) {

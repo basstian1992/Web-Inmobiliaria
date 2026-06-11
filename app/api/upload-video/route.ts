@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       httpMetadata: { contentType }
     });
 
-    const urlPublica = `https://fotos.propiedadesyparcelas.cl/${fileName}`;
+    const urlPublica = `https://propiedadesyparcelas.cl/fotos/${fileName}`;
 
     let db: any = null;
     try {

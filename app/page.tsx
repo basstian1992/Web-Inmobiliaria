@@ -1,7 +1,33 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import PropertyCard from '@/components/PropertyCard';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: "Propiedades & Parcelas Chile | Portal Inmobiliario #1 en Compra, Venta y Arriendo de Terrenos, Casas y Locales Comerciales",
+  description: "Encuentra las mejores propiedades en Chile: terrenos, parcelas de agrado, casas y locales comerciales en venta y arriendo. Portal inmobiliario con SEO optimizado, fotos reales y contacto directo con vendedores. El sitio líder en compraventa de propiedades en Chile.",
+  openGraph: {
+    title: "Propiedades & Parcelas Chile | Portal Inmobiliario #1",
+    description: "Encuentra terrenos, parcelas, casas y locales en venta y arriendo en Chile. Portal inmobiliario con SEO optimizado y contacto directo.",
+    type: 'website',
+    locale: 'es_CL',
+    siteName: 'Propiedades & Parcelas Chile',
+    url: 'https://www.propiedadesyparcelas.cl/',
+    images: [{ url: 'https://www.propiedadesyparcelas.cl/logo-nuevo.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Propiedades & Parcelas Chile | Portal Inmobiliario #1",
+    description: "Encuentra terrenos, parcelas, casas y locales en venta y arriendo en Chile.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
+  alternates: { canonical: 'https://www.propiedadesyparcelas.cl/' },
+};
 
 export default async function HomePage() {
   let db: any = null;
@@ -29,8 +55,38 @@ export default async function HomePage() {
     }
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'RealEstateAgent',
+        'name': 'Propiedades & Parcelas Chile',
+        'url': 'https://www.propiedadesyparcelas.cl/',
+        'logo': 'https://www.propiedadesyparcelas.cl/logo-nuevo.png',
+        'image': 'https://www.propiedadesyparcelas.cl/logo-nuevo.png',
+        'areaServed': { '@type': 'Country', 'name': 'Chile' },
+        'description': 'Portal inmobiliario chileno especializado en compra, venta y arriendo de terrenos, parcelas, casas y locales comerciales.',
+        'address': { '@type': 'PostalAddress', 'addressCountry': 'CL' },
+      },
+      {
+        '@type': 'WebSite',
+        'name': 'Propiedades & Parcelas Chile',
+        'url': 'https://www.propiedadesyparcelas.cl/',
+        'potentialAction': {
+          '@type': 'SearchAction',
+          'target': {
+            '@type': 'EntryPoint',
+            'urlTemplate': 'https://www.propiedadesyparcelas.cl/buscar?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
+  };
+
   return (
     <div className="dark:bg-slate-900 bg-slate-50 min-h-screen font-sans antialiased dark:text-slate-100 text-slate-900 pb-20 transition-colors">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
       {/* Cintillo de la Alianza en Cabecera (Más destacado) */}
       <div className="dark:bg-indigo-950 bg-indigo-100 border-b dark:border-indigo-500/40 border-indigo-300 text-center py-4 px-4 text-sm font-bold dark:text-indigo-100 text-indigo-900 shadow-md transition-colors">
@@ -48,8 +104,8 @@ export default async function HomePage() {
           
           {/* Logo Principal Gigante Flotante */}
           <div className="flex justify-center mb-6 sm:mb-10">
-            <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-[2.5rem] sm:rounded-[3.5rem] overflow-hidden bg-white/60 dark:bg-slate-900/50 backdrop-blur-md shadow-2xl shadow-indigo-500/10 dark:shadow-indigo-500/5 border border-white/40 dark:border-slate-700 flex items-center justify-center p-4 sm:p-6 transform transition-all hover:scale-105 hover:shadow-indigo-500/20 duration-500">
-              <img src="/logo.png?v=4" alt="Portal Inmobiliario Logo" className="w-full h-full object-contain" />
+            <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 flex items-center justify-center p-4 sm:p-6 transform transition-all hover:scale-105 duration-500">
+              <img src="/logo.png?v=5" alt="Portal Inmobiliario Logo" className="w-full h-full object-contain drop-shadow-xl" />
             </div>
           </div>
 
@@ -87,7 +143,7 @@ export default async function HomePage() {
                   <option value="Coquimbo" className="dark:bg-slate-900">Coquimbo</option>
                   <option value="Valparaíso" className="dark:bg-slate-900">Valparaíso</option>
                   <option value="Metropolitana de Santiago" className="dark:bg-slate-900">Región Metropolitana</option>
-                  <option value="Libertador Gral. Bernardo O'Higgins" className="dark:bg-slate-900">O'Higgins</option>
+                  <option value="Libertador Gral. Bernardo O'Higgins" className="dark:bg-slate-900">O&apos;Higgins</option>
                   <option value="Maule" className="dark:bg-slate-900">Maule</option>
                   <option value="Ñuble" className="dark:bg-slate-900">Ñuble</option>
                   <option value="Biobío" className="dark:bg-slate-900">Biobío</option>
@@ -124,7 +180,7 @@ export default async function HomePage() {
           </div>
 
           {destacadas.length === 0 ? (
-            <div className="bg-slate-950 border border-slate-800 rounded-3xl p-16 text-center text-slate-500 text-sm">
+            <div className="dark:bg-slate-950 bg-slate-200 border dark:border-slate-800 border-slate-300 rounded-3xl p-16 text-center text-slate-500 text-sm">
               Actualmente no hay anuncios registrados. Sé el primero en publicar desde tu panel.
             </div>
           ) : (
@@ -148,7 +204,7 @@ export default async function HomePage() {
             <div className="text-center space-y-3">
               <h3 className="text-base font-extrabold dark:text-white text-slate-900">¿Vendes y necesitas regularizar títulos?</h3>
               <p className="dark:text-slate-400 text-slate-600 text-xs leading-relaxed">
-                No arriesgues tu capital. En alianza comercial con <strong>Asesoría Pública</strong>, te conectamos con ingenieros y abogados especialistas en saneamiento, subdivisiones y estudio de títulos.
+                No arriesgues tu capital. En alianza comercial con <strong>Asesor&iacute;a P&uacute;blica</strong>, te conectamos con ingenieros y abogados especialistas en saneamiento, subdivisiones y estudio de t&iacute;tulos.
               </p>
             </div>
 
@@ -168,7 +224,7 @@ export default async function HomePage() {
           <div className="dark:bg-slate-950 bg-white border dark:border-slate-850 border-slate-200 p-6 rounded-3xl shadow-xl space-y-4 transition-colors">
             <h4 className="text-xs font-bold dark:text-white text-slate-900 uppercase tracking-wider border-b dark:border-slate-800 border-slate-200 pb-2">Beneficios Premium</h4>
             <ul className="space-y-2.5 text-xs dark:text-slate-400 text-slate-600">
-              <li className="flex gap-2 items-start"><span className="text-indigo-500">✔</span> Compresión automática a WebP.</li>
+              <li className="flex gap-2 items-start"><span className="text-indigo-500">✔</span> Imágenes optimizadas con calidad superior.</li>
               <li className="flex gap-2 items-start"><span className="text-indigo-500">✔</span> Microdatos enriquecidos (Rich Snippets).</li>
               <li className="flex gap-2 items-start"><span className="text-indigo-500">✔</span> Pagos seguros vinculados a Flow Chile.</li>
               <li className="flex gap-2 items-start"><span className="text-indigo-500">✔</span> Enlaces de video e integraciones directas.</li>
@@ -204,9 +260,9 @@ export default async function HomePage() {
                 <span className="text-3xl font-black dark:text-white text-slate-900">Gratis</span>
               </div>
               <ul className="space-y-3 text-xs dark:text-slate-400 text-slate-600 mb-8 flex-1">
-                <li className="flex gap-2">✅ Hasta <strong>2 Avisos</strong> activos</li>
-                <li className="flex gap-2">✅ Hasta <strong>5 Fotos</strong> por aviso</li>
-                <li className="flex gap-2 opacity-50">❌ Sin videos</li>
+                <li className="flex gap-2">✅ Hasta <strong>4 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>10 Fotos</strong> por aviso</li>
+                <li className="flex gap-2">✅ <strong>1 Video</strong></li>
                 <li className="flex gap-2">✅ Posicionamiento Estándar</li>
               </ul>
               <Link href="/dashboard" className="text-center w-full dark:bg-slate-800 bg-slate-200 dark:hover:bg-slate-700 hover:bg-slate-300 dark:text-white text-slate-900 font-bold py-3 rounded-xl transition-all text-xs">
@@ -222,9 +278,9 @@ export default async function HomePage() {
                 <span className="text-slate-500 text-xs ml-1">CLP/mes</span>
               </div>
               <ul className="space-y-3 text-xs dark:text-slate-300 text-slate-700 mb-8 flex-1">
-                <li className="flex gap-2">✅ Hasta <strong>4 Avisos</strong> activos</li>
-                <li className="flex gap-2">✅ Hasta <strong>8 Fotos</strong> por aviso</li>
-                <li className="flex gap-2">✅ <strong>1 Video</strong> (Enlace)</li>
+                <li className="flex gap-2">✅ Hasta <strong>8 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>16 Fotos</strong> por aviso</li>
+                <li className="flex gap-2">✅ <strong>2 Videos</strong> (Enlace/MP4)</li>
                 <li className="flex gap-2 dark:text-indigo-300 text-indigo-600">🚀 Impulso SEO Medio</li>
                 <li className="flex gap-2 dark:text-indigo-300 text-indigo-600">🚀 Prioridad en Buscador Interno</li>
               </ul>
@@ -244,9 +300,9 @@ export default async function HomePage() {
                 <span className="text-slate-500 text-xs ml-1">CLP/mes</span>
               </div>
               <ul className="space-y-3 text-xs dark:text-slate-300 text-slate-700 mb-8 flex-1">
-                <li className="flex gap-2">✅ Hasta <strong>10 Avisos</strong> activos</li>
-                <li className="flex gap-2">✅ Hasta <strong>20 Fotos</strong> por aviso</li>
-                <li className="flex gap-2">✅ Hasta <strong>3 Videos</strong></li>
+                <li className="flex gap-2">✅ Hasta <strong>20 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>40 Fotos</strong> por aviso</li>
+                <li className="flex gap-2">✅ Hasta <strong>6 Videos</strong> (MP4/Enlace)</li>
                 <li className="flex gap-2 dark:text-blue-300 text-blue-600">🔥 Impulso SEO Alto VIP</li>
                 <li className="flex gap-2 dark:text-blue-300 text-blue-600">🔥 Rich Snippets en Google</li>
               </ul>
@@ -263,9 +319,9 @@ export default async function HomePage() {
                 <span className="text-slate-500 text-xs ml-1">CLP/mes</span>
               </div>
               <ul className="space-y-3 text-xs dark:text-slate-300 text-slate-700 mb-8 flex-1">
-                <li className="flex gap-2">✅ Hasta <strong>50 Avisos</strong> activos</li>
-                <li className="flex gap-2">✅ Hasta <strong>30 Fotos</strong> por aviso</li>
-                <li className="flex gap-2">✅ Hasta <strong>10 Videos</strong></li>
+                <li className="flex gap-2">✅ Hasta <strong>100 Avisos</strong> activos</li>
+                <li className="flex gap-2">✅ Hasta <strong>60 Fotos</strong> por aviso</li>
+                <li className="flex gap-2">✅ Hasta <strong>20 Videos</strong> (MP4/Enlace)</li>
                 <li className="flex gap-2 dark:text-amber-300 text-amber-600">👑 Exposición Máxima Absoluta</li>
                 <li className="flex gap-2 dark:text-amber-300 text-amber-600">👑 Campaña SEO Ultra Integrada</li>
               </ul>
